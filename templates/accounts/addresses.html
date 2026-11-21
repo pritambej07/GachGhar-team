@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Addresses{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">Delivery Addresses</h1>
+  <div class="account-layout">
+    {% include "partials/account_nav.html" %}
+    <div class="account-main">
+      <p><a class="btn btn--primary" href="{% url 'accounts:address_create' %}">Add new address</a></p>
+      {% if addresses %}
+      <ul class="address-list">
+        {% for address in addresses %}
+          <li class="address-card">
+            <div class="address-card__header">
+              <p><strong>{{ address.full_name }}</strong>{% if address.is_default %} <span class="tag">Default</span>{% endif %}{% if address.address_type %} <span class="tag tag--subtle">{{ address.get_address_type_display }}</span>{% endif %}</p>
+            </div>
+            <p>{{ address.line1 }}{% if address.line2 %}, {{ address.line2 }}{% endif %}<br>{{ address.city }}, {{ address.state }} {{ address.pincode }}<br>{{ address.country }} · {{ address.phone }}</p>
+            <div class="row-actions">
+              <a href="{% url 'accounts:address_edit' address.pk %}">Edit</a>
+              {% if not address.is_default %}
+                <form method="post" action="{% url 'accounts:address_default' address.pk %}" class="inline-form">{% csrf_token %}<button class="link-btn" type="submit">Make default</button></form>
+              {% endif %}
+              <form method="post" action="{% url 'accounts:address_delete' address.pk %}" class="inline-form">{% csrf_token %}<button class="link-btn danger" type="submit">Delete</button></form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+        <div class="empty-state">
+          <h3>No saved addresses</h3>
+          <p>Add a delivery address to speed up checkout.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

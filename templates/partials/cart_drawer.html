@@ -1,0 +1,12 @@
+<aside class="drawer drawer--right" id="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-drawer-title" hidden>
+  <div class="drawer__head">
+    <h2 class="drawer__title" id="cart-drawer-title">Your cart</h2>
+    <button type="button" class="icon-btn" data-drawer-close aria-label="Close cart"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+  </div>
+  <div class="drawer__body" data-cart-body data-api="{% url 'store:cart_api' %}" data-update-url="{% url 'store:cart_update' 0 %}" aria-live="polite"><p class="muted">Loading your cart…</p></div>
+  <div class="drawer__foot" data-cart-foot hidden>
+    <div class="totals-line"><span>Subtotal</span><strong data-cart-subtotal></strong></div>
+    <a class="btn btn--primary btn--block" href="{% url 'store:checkout' %}">Checkout</a>
+    <a class="btn btn--ghost btn--block" href="{% url 'store:cart' %}">View full cart</a>
+  </div>
+</aside>

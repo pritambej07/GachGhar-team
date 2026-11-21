@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block meta_description %}{{ description|default:"Browse GachGhar plants and gardening products." }}{% endblock %}
+{% block content %}
+<div class="container">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="{% url 'store:home' %}">Home</a></li>
+      {% if category %}
+        {% if category.parent %}<li><a href="{{ category.parent.get_absolute_url }}">{{ category.parent.name }}</a></li>{% endif %}
+        <li aria-current="page">{{ category.name }}</li>
+      {% else %}
+        <li aria-current="page">{{ title }}</li>
+      {% endif %}
+    </ol>
+  </nav>
+
+  <header class="listing-head">
+    <h1>{{ title }}</h1>
+    {% if description %}<p>{{ description|linebreaksbr }}</p>{% endif %}
+    <p class="muted">{{ total_count }} product{{ total_count|pluralize }}</p>
+  </header>
+
+  {% if subcategories %}
+    <ul class="chip-row">{% for sub in subcategories %}<li><a class="chip" href="{{ sub.get_absolute_url }}">{{ sub.name }}</a></li>{% endfor %}</ul>
+  {% endif %}
+
+  <div class="listing">
+    <aside class="filters" aria-label="Filter products">
+      <form method="get" class="filters__form">
+        {% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}
+        <fieldset class="filters__group">
+          <legend>Price (₹)</legend>
+          <label>Minimum <input type="number" name="min_price" min="0" max="99999999.99" step="0.01" value="{{ min_price }}"></label>
+          <label>Maximum <input type="number" name="max_price" min="0" max="99999999.99" step="0.01" value="{{ max_price }}"></label>
+        </fieldset>
+        <label class="check"><input type="checkbox" name="in_stock" value="1" {% if in_stock %}checked{% endif %}> <span>In stock only</span></label>
+        <label>Sort by
+          <select name="sort">
+            {% for key, label in sort_labels.items %}<option value="{{ key }}" {% if key == sort %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </label>
+        <button class="btn btn--primary btn--block" type="submit">Apply</button>
+        <a class="btn btn--ghost btn--block" href="?{% if q %}q={{ q|urlencode }}{% endif %}">Clear filters</a>
+      </form>
+    </aside>
+
+    <div>
+      {% if page.object_list %}
+        <div class="product-grid">
+          {% for product in page.object_list %}{% include "partials/product_card.html" %}{% endfor %}
+        </div>
+        {% include "partials/pagination.html" %}
+      {% else %}
+        <div class="empty-state">
+          <h2>No products found</h2>
+          <p>Try a different search, a wider price range, or clear the filters.</p>
+          <a class="btn btn--ghost" href="{% url 'store:products' %}">Browse all products</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

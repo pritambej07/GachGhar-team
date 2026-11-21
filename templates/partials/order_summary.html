@@ -1,0 +1,22 @@
+{% load store_tags %}
+<div class="table-scroll" role="region" aria-label="Order items" tabindex="0">
+<table class="order-table">
+  <thead><tr><th scope="col">Item</th><th scope="col">Qty</th><th scope="col">Price</th><th scope="col">Total</th></tr></thead>
+  <tbody>
+    {% for item in order.items.all %}
+      <tr>
+        <td>{{ item.product_name }}<br><span class="muted">{{ item.variant_name }} · SKU {{ item.sku }}</span></td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.unit_price|inr }}</td>
+        <td>{{ item.line_total|inr }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+<dl class="totals totals--right">
+  <div><dt>Subtotal</dt><dd>{{ order.subtotal|inr }}</dd></div>
+  {% if order.discount_total %}<div><dt>Coupon {{ order.coupon_code }}</dt><dd>&minus;{{ order.discount_total|inr }}</dd></div>{% endif %}
+  <div><dt>Shipping</dt><dd>{{ order.shipping_fee|inr }}</dd></div>
+  <div class="totals__grand"><dt>Total</dt><dd>{{ order.total|inr }}</dd></div>
+</dl>

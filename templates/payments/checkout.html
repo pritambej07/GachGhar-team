@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+<h2>Complete payment</h2>
+<p>Order {{ order.number }} · ₹{{ order.total }}</p>
+<button id="pay" class="btn btn-primary">Pay securely with Razorpay</button>
+<p id="msg"></p>
+<form id="csrf-form">{% csrf_token %}</form>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('pay').onclick=function(){
+ const b=this;b.disabled=true;
+ if(typeof Razorpay!=='function'){document.getElementById('msg').textContent='Razorpay could not load. Check your internet connection.';b.disabled=false;return;}
+ const r=new Razorpay({
+ key:"{{ razorpay_key|escapejs }}",amount:{{ amount_paise }},currency:"INR",
+ name:"GachGhar",order_id:"{{ order.razorpay_order_id|escapejs }}",
+ handler:function(x){
+  const f=document.createElement('form');f.method='POST';f.action="{% url 'store:verify_payment' %}";
+  const csrf=document.querySelector("#csrf-form [name=csrfmiddlewaretoken]");
+  const vals={razorpay_order_id:x.razorpay_order_id,razorpay_payment_id:x.razorpay_payment_id,razorpay_signature:x.razorpay_signature};
+  if(csrf) vals.csrfmiddlewaretoken=csrf.value;
+  for(const k in vals){const i=document.createElement('input');i.type='hidden';i.name=k;i.value=vals[k];f.appendChild(i)}
+  document.body.appendChild(f);f.submit();
+ },
+ modal:{ondismiss:function(){b.disabled=false}},
+ });
+ r.on('payment.failed',function(){document.getElementById('msg').textContent='Payment failed. Order is pending. Please try again.';b.disabled=false});
+ r.open();
+};
+</script>
+{% endblock %}

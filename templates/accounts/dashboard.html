@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}My account{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">My account</h1>
+  <div class="account-layout">
+    {% include "partials/account_nav.html" %}
+    <div class="account-main">
+      <div class="stat-row">
+        <div class="stat"><span class="stat__value">{{ cart_count }}</span><span class="stat__label">Items in cart</span></div>
+        <div class="stat"><span class="stat__value">{{ wishlist_count }}</span><span class="stat__label">Wishlist items</span></div>
+      </div>
+      <section class="section-block">
+        <div class="section-head"><h2>Recent orders</h2><a href="{% url 'accounts:orders' %}">All orders</a></div>
+        {% for order in recent_orders %}
+          <p><a href="{{ order.get_absolute_url }}">{{ order.number }}</a> · {{ order.get_status_display }} · {{ order.total|default_if_none:"" }}</p>
+        {% empty %}
+          <p class="muted">You have not placed any orders yet.</p>
+        {% endfor %}
+      </section>
+      <section class="section-block">
+        <div class="section-head"><h2>Default delivery address</h2><a href="{% url 'accounts:addresses' %}">Manage</a></div>
+        {% if default_address %}
+          <address>{{ default_address.full_name }}, {{ default_address.line1 }}, {{ default_address.city }} {{ default_address.pincode }}</address>
+        {% else %}
+          <p class="muted">No default address saved.</p>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

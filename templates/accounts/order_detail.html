@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.number }}{% endblock %}
+{% block content %}
+<div class="container">
+  <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="{% url 'accounts:orders' %}">My orders</a></li><li aria-current="page">{{ order.number }}</li></ol></nav>
+  <h1 class="page-title">Order {{ order.number }}</h1>
+  <div class="account-layout">
+    {% include "partials/account_nav.html" %}
+    <div class="account-main">
+      <p>Placed {{ order.created_at|date:"j M Y, H:i" }} · <strong>{{ order.get_status_display }}</strong> · Payment {{ order.get_payment_status_display|lower }}</p>
+      <p class="invoice-download"><a class="btn btn--ghost" href="{% url 'accounts:order_invoice' order.number %}">Download invoice PDF</a></p>
+      <section class="section-block">
+        <h2>Delivery address</h2>
+        <address>{{ order.shipping_address.full_name }}<br>{{ order.shipping_address.line1 }}{% if order.shipping_address.line2 %}, {{ order.shipping_address.line2 }}{% endif %}<br>{{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.pincode }}</address>
+      </section>
+      {% if order.shipment %}
+        <section class="section-block">
+          <h2>Shipment tracking</h2>
+          <p><strong>Status:</strong> {{ order.shipment.get_status_display }}</p>
+          {% if order.shipment.carrier %}<p><strong>Carrier:</strong> {{ order.shipment.carrier }}</p>{% endif %}
+          {% if order.shipment.tracking_number %}<p><strong>Tracking number:</strong> {{ order.shipment.tracking_number }}</p>{% endif %}
+          {% if order.shipment.estimated_delivery %}<p><strong>Estimated delivery:</strong> {{ order.shipment.estimated_delivery|date:"j M Y" }}</p>{% endif %}
+          {% if order.shipment.tracking_url %}
+            <p><a class="btn btn--primary" href="{{ order.shipment.tracking_url }}" target="_blank" rel="noopener noreferrer">Track package</a></p>
+          {% endif %}
+        </section>
+      {% endif %}
+      <section class="section-block">
+        <h2>Items</h2>
+        {% include "partials/order_summary.html" %}
+      </section>
+      {% if order.can_cancel %}
+        <form method="post" action="{% url 'accounts:order_cancel' order.number %}">
+          {% csrf_token %}<button class="btn btn--ghost" type="submit">Cancel order</button>
+        </form>
+      {% elif order.status == "placed" or order.status == "confirmed" %}
+        <p class="muted">This paid order cannot be cancelled online. Please contact the store to arrange a refund.</p>
+      {% endif %}
+      <section class="section-block">
+        <h2>Order history</h2>
+        <ol class="timeline">
+          {% for event in order.events.all %}
+            <li><strong>{{ event.get_status_display|default:event.status|capfirst }}</strong> · {{ event.created_at|date:"j M Y, H:i" }}{% if event.note %}<br><span class="muted">{{ event.note }}</span>{% endif %}</li>
+          {% endfor %}
+        </ol>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load store_tags %}
+{% block title %}My orders{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">My orders</h1>
+  <div class="account-layout">
+    {% include "partials/account_nav.html" %}
+    <div class="account-main">
+      {% for order in orders %}
+        <article class="order-card">
+          <p><a href="{{ order.get_absolute_url }}"><strong>{{ order.number }}</strong></a> · {{ order.created_at|date:"j M Y" }}</p>
+          <p>{{ order.get_status_display }} · {{ order.total|inr }} · {{ order.items.count }} item{{ order.items.count|pluralize }}</p>
+          <p><a href="{% url 'accounts:order_invoice' order.number %}">Download invoice PDF</a></p>
+        </article>
+      {% empty %}
+        <div class="empty-state"><h2>No orders yet</h2><p>Orders you place will appear here.</p><a class="btn btn--primary" href="{% url 'store:products' %}">Shop plants</a></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

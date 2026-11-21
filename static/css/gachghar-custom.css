@@ -1,0 +1,693 @@
+/* GachGhar targeted UI refinements. Loaded after main.css; existing design tokens and components remain intact. */
+
+/* Desktop navigation follows the supplied reference: logo left, primary links centered, actions right. */
+@media (min-width: 900px) {
+  .site-header__bar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 24px;
+    height: 78px;
+    padding: 0 20px;
+  }
+  .site-header__start { min-width: 0; }
+  .site-logo { justify-self: start; }
+  .site-logo img { max-width: 154px; }
+  .site-nav.only-desktop {
+    display: block;
+    min-width: 0;
+    border-top: 0;
+  }
+  .site-nav__list {
+    justify-content: center;
+    gap: 2px;
+    white-space: nowrap;
+    padding: 0;
+  }
+  .site-nav__link {
+    padding: 13px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .site-nav__item--shop .mega { top: calc(100% + 1px); left: 0; transform: none; min-width: 290px; }
+  .mega__inner { min-width: 250px; }
+  .mega__all { display: inline-block; margin-top: 12px; font-weight: 600; text-decoration: none; }
+  .site-header__end { gap: 2px; }
+  .header-action { position: relative; display: flex; }
+  .header-action > summary { list-style: none; cursor: pointer; }
+  .header-action > summary::-webkit-details-marker { display: none; }
+  .header-popover {
+    position: absolute;
+    z-index: 70;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 210px;
+    padding: 10px;
+    background: var(--white);
+    border: 1px solid var(--sage);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+  .header-search-popover { min-width: 290px; }
+  .header-search-popover form { display: flex; align-items: center; gap: 8px; }
+  .header-search-popover input { min-width: 0; }
+  .header-account-popover { display: flex; flex-direction: column; gap: 2px; padding: 12px; }
+  .header-account-popover a { display: block; padding: 9px 10px; color: var(--dark-botanical); text-decoration: none; border-radius: 7px; }
+  .header-account-popover a:hover { background: var(--pale); }
+  .header-account__signed { padding: 5px 10px 9px; margin: 0 0 4px; border-bottom: 1px solid var(--sage); color: var(--muted); font-size: 13px; }
+  .header-account__signed strong { color: var(--charcoal); font-size: 14px; }
+  .site-header__end .icon-btn { width: 40px; height: 40px; }
+}
+
+/* Mobile keeps the existing hamburger-left, centered-logo and search/cart-right arrangement. */
+@media (max-width: 899px) {
+  .site-header__bar { grid-template-columns: 1fr auto 1fr; }
+  /* Flatten the left wrapper on mobile so hamburger, logo and action icons occupy the three grid columns. */
+  .site-header__start { display: contents; }
+  .site-logo { justify-self: center; }
+  .site-header__end { justify-self: end; }
+  .site-nav.only-desktop { display: none !important; }
+}
+
+/* Homepage copy blocks use the existing GachGhar palette and typography. */
+.hero__eyebrow, .home-eyebrow {
+  margin: 0 0 8px;
+  color: var(--yellow);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.home-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding-top: 22px;
+}
+.home-benefit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  background: var(--white);
+  border: 1px solid var(--sage);
+  border-radius: var(--radius-lg);
+}
+.home-benefit > span { flex: 0 0 auto; font-size: 25px; }
+.home-benefit h2 { margin: 0 0 3px; font: 600 18px/1.25 var(--font-display); }
+.home-benefit p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.home-empty { padding-bottom: 8px; }
+.home-empty h2 { margin-bottom: 8px; }
+.home-story {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  gap: 28px;
+  align-items: center;
+  margin-top: 44px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  background: var(--pale);
+  border: 1px solid var(--sage);
+  border-radius: var(--radius-lg);
+}
+.home-story h2 { max-width: 12ch; margin: 0; font-size: clamp(28px, 3.4vw, 40px); }
+.home-story p { color: var(--muted); }
+.home-story__links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+
+/* AI Stylist: dark title bar and send button match the supplied chat reference only. */
+.gardener__launcher {
+  background: #202020;
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
+}
+.gardener__launcher:hover { background: #080808; }
+.gardener__sparkle { font-size: 19px; line-height: 1; }
+.gardener__panel { background: #fff; border-color: #dedede; }
+.gardener__header { background: #202020; color: #fff; }
+.gardener__avatar { background: transparent; color: #f6c75a; font-size: 22px; }
+.gardener__title strong { font-size: 1.02rem; }
+.gardener__status { color: rgba(255,255,255,.78); }
+.gardener__log { background: #fff; }
+.gardener__msg--bot { background: #f7f7f7; border-color: #ededed; }
+.gardener__msg--user { background: #242424; color: #fff; }
+.gardener__form { gap: 0; padding: 10px; }
+.gardener__form input { border-radius: 8px 0 0 8px; border-color: #dedede; }
+.gardener__send {
+  width: 104px;
+  height: 44px;
+  border-radius: 0 999px 999px 0;
+  background: #202020;
+  color: #fff;
+  font: 600 14px var(--font-body);
+}
+.gardener__send:hover { background: #080808; }
+.gardener__note { background: #fff; }
+@media (max-width: 700px) {
+  .home-benefits { grid-template-columns: 1fr; }
+  .home-benefit { padding: 12px 14px; }
+  .home-story { grid-template-columns: 1fr; gap: 14px; margin-top: 30px; }
+}
+@media (max-width: 600px) {
+  .gardener__launcher-text { display: inline !important; }
+  .gardener__launcher { width: auto; min-width: 54px; padding: 0 16px; }
+  .gardener__send { width: 88px; }
+}
+/* GachGhar header alignment refinement */
+@media (min-width: 900px) {
+  .site-header__bar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-areas:
+      ". logo actions"
+      "nav nav nav";
+    height: auto;
+    min-height: 78px;
+    padding: 8px 20px 0;
+    row-gap: 0;
+  }
+  .site-header__start {
+    display: contents;
+  }
+  .site-logo {
+    grid-area: logo;
+    justify-self: center;
+    align-self: center;
+  }
+  .site-header__end {
+    grid-area: actions;
+    justify-self: end;
+    align-self: center;
+  }
+  .site-nav.only-desktop {
+    grid-area: nav;
+    width: 100%;
+    border-top: 1px solid var(--sage);
+  }
+}
+/* FIX: Keep exactly one search icon in desktop and mobile navbar */
+@media (min-width: 900px) {
+  .site-header__start .header-search {
+    display: none !important;
+  }
+  .site-header__end > [data-search-toggle] {
+    display: inline-flex !important;
+  }
+}
+/* GachGhar centered logo and single-search refinement */
+@media (min-width: 900px) {
+  .site-header__bar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-areas:
+      ". logo actions"
+      "nav nav nav";
+    height: auto;
+    min-height: 76px;
+    padding: 8px 16px 0;
+  }
+  .site-header__start {
+    display: contents;
+  }
+  .site-logo {
+    grid-area: logo;
+    justify-self: center;
+    align-self: center;
+  }
+  .site-header__end {
+    grid-area: actions;
+    justify-self: end;
+  }
+  .site-nav.only-desktop {
+    grid-area: nav;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+  .mobile-search {
+    display: none !important;
+  }
+}
+.header-action {
+  position: relative;
+}
+.header-action > summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  cursor: pointer;
+}
+.header-action > summary::-webkit-details-marker {
+  display: none;
+}
+.header-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 80;
+  width: min(340px, calc(100vw - 32px));
+  padding: 12px;
+  background: var(--white);
+  border: 1px solid var(--sage);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+.header-search-popover form {
+  display: block;
+  margin: 0;
+}
+.header-search-popover input[type="search"],
+.mobile-search input[type="search"] {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  border-radius: 999px;
+  background: var(--white);
+}
+.header-search-popover label.visually-hidden,
+.mobile-search label.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+@media (max-width: 899px) {
+  .site-header__bar {
+    display: grid;
+    grid-template-columns: minmax(44px, 1fr) auto minmax(44px, 1fr);
+    grid-template-areas: "menu logo actions";
+    height: 64px;
+    min-height: 64px;
+    padding: 0 8px;
+  }
+  .site-header__start {
+    display: contents;
+  }
+  .site-header__start > .only-mobile {
+    grid-area: menu;
+    justify-self: start;
+  }
+  .site-logo {
+    grid-area: logo;
+    justify-self: center;
+  }
+  .site-nav.only-desktop {
+    display: none !important;
+  }
+  .site-header__end {
+    grid-area: actions;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .mobile-search form {
+    display: block;
+    margin: 0 auto;
+  }
+}
+/* GachGhar: single shared search component */
+.site-header__bar {
+  display: grid;
+}
+@media (min-width: 900px) {
+  .site-header__bar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-areas:
+      ". logo actions"
+      "nav nav nav";
+    height: auto;
+    min-height: 76px;
+    padding: 8px 16px 0;
+  }
+  .site-header__start {
+    display: contents;
+  }
+  .site-logo {
+    grid-area: logo;
+    justify-self: center;
+    align-self: center;
+  }
+  .site-header__end {
+    grid-area: actions;
+    justify-self: end;
+  }
+  .site-nav.only-desktop {
+    grid-area: nav;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+}
+.header-action {
+  position: relative;
+  flex: 0 0 auto;
+}
+.header-action > summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  cursor: pointer;
+}
+.header-action > summary::-webkit-details-marker {
+  display: none;
+}
+.header-action > summary::marker {
+  content: "";
+}
+.header-popover {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 100;
+  width: min(440px, calc(100vw - 24px));
+  padding: 12px;
+  background: var(--white);
+  border: 1px solid var(--sage);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+.header-action[open] > .header-popover {
+  display: block;
+  animation: gachghar-search-in .16s ease-out;
+}
+.header-search-popover form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 40px;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.header-search-popover input[type="search"] {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  border-radius: var(--radius);
+}
+.header-search-popover label.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.header-search-close {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--sage);
+  border-radius: 50%;
+  color: var(--dark-botanical);
+  background: var(--white);
+  cursor: pointer;
+}
+.header-search-close:hover {
+  background: var(--pale);
+}
+@media (max-width: 899px) {
+  .site-header__bar {
+    grid-template-columns: minmax(44px, 1fr) auto minmax(90px, 1fr);
+    grid-template-areas: "menu logo actions";
+    height: 64px;
+    min-height: 64px;
+    padding: 0 8px;
+  }
+  .site-header__start {
+    display: contents;
+  }
+  .site-header__start > .only-mobile {
+    grid-area: menu;
+    justify-self: start;
+  }
+  .site-logo {
+    grid-area: logo;
+    justify-self: center;
+  }
+  .site-header__end {
+    grid-area: actions;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .site-nav.only-desktop {
+    display: none !important;
+  }
+  .header-search-popover {
+    position: fixed;
+    top: 72px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+  }
+}
+@keyframes gachghar-search-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .header-action[open] > .header-popover {
+    animation: none;
+  }
+}
+/* ---------- GachGhar professional homepage ---------- */
+.gachghar-hero {
+  min-height: 470px;
+}
+.gachghar-hero .hero__inner {
+  max-width: 720px;
+}
+.hero__eyebrow,
+.gachghar-section-eyebrow {
+  font: 600 11px/1.4 var(--font-body);
+  letter-spacing: .16em;
+  color: var(--leaf);
+  margin: 0 0 9px;
+}
+.gachghar-hero .hero__eyebrow {
+  color: var(--sage);
+}
+.gachghar-hero h1 {
+  max-width: 16ch;
+  font-size: clamp(38px, 5vw, 60px);
+}
+.gachghar-hero__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.gachghar-hero__secondary {
+  color: #fff;
+  border-color: rgba(255,255,255,.75);
+  background: rgba(255,255,255,.08);
+}
+.gachghar-hero__secondary:hover {
+  color: var(--dark-botanical);
+  background: #fff;
+}
+.gachghar-home-intro {
+  padding-top: 25px;
+  text-align: center;
+}
+.gachghar-home-intro p {
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 15px;
+}
+.gachghar-home-sections .section {
+  padding-top: 34px;
+}
+.gachghar-home-sections .section + .section {
+  margin-top: 10px;
+}
+.gachghar-home-sections .section-head {
+  align-items: end;
+  margin-bottom: 22px;
+}
+.gachghar-home-sections .section-head h2 {
+  font-size: clamp(27px, 3vw, 36px);
+}
+.gachghar-section-link {
+  color: var(--botanical);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.gachghar-section-link:hover {
+  color: var(--leaf);
+  text-decoration: underline;
+}
+.gachghar-home-sections .category-grid {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+}
+.gachghar-home-sections .category-tile {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: 178px;
+  overflow: hidden;
+  padding: 0;
+  isolation: isolate;
+}
+.category-tile__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .25s ease;
+  z-index: -2;
+}
+.category-tile--image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 15%, rgba(13, 47, 34, .78) 100%);
+  z-index: -1;
+}
+.category-tile:hover .category-tile__image {
+  transform: scale(1.05);
+}
+.category-tile__initial {
+  position: absolute;
+  right: 14px;
+  top: -13px;
+  color: rgba(6, 78, 59, .11);
+  font: 700 130px/.95 var(--font-display);
+  pointer-events: none;
+}
+.category-tile__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 178px;
+  padding: 18px;
+  gap: 5px;
+}
+.category-tile__content strong {
+  font: 600 23px/1.15 var(--font-display);
+  color: var(--dark-botanical);
+}
+.category-tile__content > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.category-tile--image .category-tile__content strong,
+.category-tile--image .category-tile__content > span {
+  color: #fff;
+}
+.gachghar-home-sections .product-grid {
+  grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
+  gap: 18px;
+}
+.gachghar-home-sections .product-card {
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.gachghar-home-sections .product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+.guide-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 210px;
+}
+.guide-card__label {
+  color: var(--leaf);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  margin-bottom: 10px;
+}
+.guide-card__read {
+  margin-top: auto;
+  padding-top: 12px;
+  color: var(--botanical);
+  font-size: 14px;
+  font-weight: 600;
+}
+.review-card__product {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.gachghar-newsletter {
+  padding: 38px 24px;
+  border: 1px solid var(--sage);
+}
+.gachghar-newsletter > p:not(.gachghar-section-eyebrow) {
+  color: var(--muted);
+}
+.gachghar-newsletter .newsletter__form {
+  margin-top: 18px;
+}
+@media (max-width: 600px) {
+  .gachghar-hero {
+    min-height: 390px;
+  }
+  .gachghar-hero .hero__inner {
+    padding-top: 38px;
+    padding-bottom: 38px;
+  }
+  .gachghar-hero h1 {
+    font-size: clamp(36px, 10vw, 46px);
+  }
+  .gachghar-hero__actions {
+    align-items: stretch;
+  }
+  .gachghar-hero__actions .btn {
+    flex: 1 1 100%;
+  }
+  .gachghar-home-sections .section {
+    padding-top: 28px;
+  }
+  .gachghar-home-sections .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .gachghar-home-sections .category-tile,
+  .category-tile__content {
+    min-height: 145px;
+  }
+  .category-tile__content {
+    padding: 12px;
+  }
+  .category-tile__content strong {
+    font-size: 19px;
+  }
+  .gachghar-home-sections .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .gachghar-home-sections .section-head {
+    align-items: start;
+  }
+  .gachghar-newsletter {
+    padding: 28px 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .category-tile__image,
+  .gachghar-home-sections .product-card {
+    transition: none;
+  }
+}

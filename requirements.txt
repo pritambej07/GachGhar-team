@@ -1,0 +1,16 @@
+# Pinned, stable versions for GachGhar (Python 3.12 recommended). Install inside a virtual environment.
+Django==5.2.8
+Pillow==11.3.0
+argon2-cffi==23.1.0
+dj-database-url==2.3.0
+python-dotenv==1.1.1
+whitenoise==6.9.0
+# PostgreSQL driver: needed only when DATABASE_URL points at PostgreSQL.
+psycopg[binary]==3.2.9
+# Production WSGI server (Linux hosts). Not required for local development on Windows.
+gunicorn==23.0.0
+razorpay==2.0.1
+
+# PDF invoice generation
+reportlab==4.4.9
+uharfbuzz==0.57.0

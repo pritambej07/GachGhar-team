@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load store_tags %}
+{% block title %}Search results{% endblock %}
+{% block content %}
+<div class="container">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="{% url 'store:home' %}">Home</a></li>
+      <li aria-current="page">Search results</li>
+    </ol>
+  </nav>
+
+  <header class="listing-head">
+    <h1>Search results</h1>
+    <p class="muted">{{ total_count }} product{{ total_count|pluralize }} found</p>
+  </header>
+
+  {% if page.object_list %}
+    <div class="product-grid">
+      {% for product in page.object_list %}
+        {% include "partials/product_card.html" %}
+      {% endfor %}
+    </div>
+    {% include "partials/pagination.html" %}
+  {% else %}
+    <div class="empty-state">
+      <h2>No products found</h2>
+      <p>Try a different search term or browse all products.</p>
+      <a class="btn btn--primary" href="{% url 'store:products' %}">Browse all products</a>
+    </div>
+  {% endif %}
+  
+  <div class="filters-mobile">
+    <a class="btn btn--ghost btn--block" href="?q={{ q }}">Clear filters</a>
+  </div>
+</div>
+{% endblock %}

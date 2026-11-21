@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load store_tags %}
+{% block title %}Checkout{% endblock %}
+{% block body_class %}is-checkout{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">Checkout</h1>
+  <div class="checkout-layout">
+    <form method="post" class="checkout-form" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="checkout_token" value="{{ checkout_token }}">
+      <fieldset class="form-section">
+        <legend>Delivery details</legend>
+        {% if user.is_authenticated and saved_addresses %}
+          <div class="saved-addresses-section">
+            <h3>Saved addresses</h3>
+            <ul class="saved-address-list">
+              {% for addr in saved_addresses %}
+                <li class="saved-address-item{% if addr.is_default %} is-default{% endif %}">
+                  <label class="radio">
+                    <input type="radio" name="use_address" value="{{ addr.pk }}" {% if forloop.first and not form.full_name.value %}checked{% endif %}>
+                    <span class="radio-label">
+                      {{ addr.full_name }}<br>
+                      {{ addr.line1 }}{% if addr.line2 %}, {{ addr.line2 }}{% endif %}<br>
+                      {{ addr.city }}, {{ addr.state }} {{ addr.pincode }}
+                      {% if addr.is_default %}<span class="tag">Default</span>{% endif %}
+                    </span>
+                  </label>
+                </li>
+              {% endfor %}
+            </ul>
+            <p><a href="{% url 'accounts:addresses' %}">Manage addresses</a></p>
+          </div>
+          <hr class="section-divider">
+        {% endif %}
+        {% include "partials/form_fields.html" %}
+      </fieldset>
+      {% if payment_available %}
+        <button class="btn btn--primary btn--block" type="submit">Place order</button>
+        <p class="help">Your order is created only after the store confirms it is valid and stock is reserved.</p>
+      {% else %}
+        <p class="error-text">Ordering is unavailable right now because no payment method is enabled. Please contact the store.</p>
+      {% endif %}
+    </form>
+
+    <aside class="summary-card" aria-labelledby="summary-title">
+      <h2 id="summary-title">Your order</h2>
+      <ul class="mini-lines">
+        {% for line in summary.lines %}
+          <li><span>{{ line.product_name }} ({{ line.variant_name }}) × {{ line.quantity }}</span><span>{{ line.line_total|inr }}</span></li>
+        {% endfor %}
+      </ul>
+      <dl class="totals">
+        <div><dt>Subtotal</dt><dd>{{ totals.subtotal|inr }}</dd></div>
+        {% if coupon_code %}<div><dt>Coupon {{ coupon_code }}</dt><dd>&minus;{{ totals.discount|inr }}</dd></div>{% endif %}
+        <div><dt>Shipping</dt><dd>{{ totals.shipping|inr }}</dd></div>
+        <div class="totals__grand"><dt>Total</dt><dd>{{ totals.total|inr }}</dd></div>
+      </dl>
+      {% if coupon_code %}
+        <form method="post" action="{% url 'store:coupon_remove' %}">{% csrf_token %}<button class="link-btn" type="submit">Remove coupon</button></form>
+      {% else %}
+        <form method="post" action="{% url 'store:coupon_apply' %}" class="coupon-form">
+          {% csrf_token %}
+          <label for="coupon-code">Coupon code</label>
+          <div class="coupon-form__row"><input id="coupon-code" name="coupon_code" type="text" maxlength="40" autocomplete="off"><button class="btn btn--ghost" type="submit">Apply</button></div>
+        </form>
+      {% endif %}
+      {% if summary.has_issues %}<p class="error-text">Some items changed. <a href="{% url 'store:cart' %}">Review your cart</a>.</p>{% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

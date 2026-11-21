@@ -1,0 +1,117 @@
+﻿{% load store_tags %}
+{% if block.kind == "categories" %}
+<section class="container section section--categories" aria-labelledby="sec-categories">
+  <div class="section-head">
+    <div>
+      <p class="gachghar-section-eyebrow">EXPLORE THE COLLECTION</p>
+      <h2 id="sec-categories">{{ block.title }}</h2>
+    </div>
+    <a class="gachghar-section-link" href="{% url 'store:products' %}">Shop all products &rarr;</a>
+  </div>
+  <div class="category-grid">
+    {% for cat in block.categories %}
+      <a class="category-tile{% if cat.image %} category-tile--image{% endif %}"
+         href="{{ cat.get_absolute_url }}"
+         aria-label="Explore {{ cat.name }}">
+        {% if cat.image %}
+          <img class="category-tile__image"
+               src="{{ cat.image.url }}"
+               alt="{{ cat.name }}"
+               loading="lazy">
+        {% else %}
+          <span class="category-tile__initial" aria-hidden="true">{{ cat.name|slice:":1" }}</span>
+        {% endif %}
+        <span class="category-tile__content">
+          <strong>{{ cat.name }}</strong>
+          <span>Explore collection &rarr;</span>
+        </span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% elif block.kind == "featured" or block.kind == "category_products" %}
+<section class="container section section--products" aria-labelledby="sec-{{ forloop.counter }}">
+  <div class="section-head">
+    <div>
+      <p class="gachghar-section-eyebrow">GACHGHAR COLLECTION</p>
+      <h2 id="sec-{{ forloop.counter }}">{{ block.title }}</h2>
+    </div>
+    {% if block.category %}
+      <a class="gachghar-section-link" href="{{ block.category.get_absolute_url }}">View all &rarr;</a>
+    {% else %}
+      <a class="gachghar-section-link" href="{% url 'store:products' %}">View all &rarr;</a>
+    {% endif %}
+  </div>
+  <div class="product-grid">
+    {% for product in block.products %}
+      {% include "partials/product_card.html" %}
+    {% endfor %}
+  </div>
+</section>
+{% elif block.kind == "guides" %}
+<section class="container section section--guides" aria-labelledby="sec-guides">
+  <div class="section-head">
+    <div>
+      <p class="gachghar-section-eyebrow">LEARN AND GROW</p>
+      <h2 id="sec-guides">{{ block.title }}</h2>
+    </div>
+    <a class="gachghar-section-link" href="{% url 'store:guides' %}">All guides &rarr;</a>
+  </div>
+  <div class="guide-grid">
+    {% for guide in block.guides %}
+      <a class="guide-card" href="{{ guide.get_absolute_url }}">
+        <span class="guide-card__label">PLANT CARE</span>
+        <h3>{{ guide.title }}</h3>
+        <p>{{ guide.summary }}</p>
+        <span class="guide-card__read">Read guide &rarr;</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% elif block.kind == "reviews" %}
+<section class="container section section--reviews" aria-labelledby="sec-reviews">
+  <div class="section-head">
+    <div>
+      <p class="gachghar-section-eyebrow">CUSTOMER EXPERIENCES</p>
+      <h2 id="sec-reviews">{{ block.title }}</h2>
+    </div>
+  </div>
+  <div class="review-grid">
+    {% for review in block.reviews %}
+      <blockquote class="review-card">
+        <p class="review-card__rating" aria-label="Rated {{ review.rating }} out of 5">
+          {{ review.rating }}/5
+        </p>
+        {% if review.title %}<p class="review-card__title">{{ review.title }}</p>{% endif %}
+        <p>{{ review.body }}</p>
+        <p class="review-card__product">
+          Product:
+          <a href="{{ review.product.get_absolute_url }}">{{ review.product.name }}</a>
+        </p>
+      </blockquote>
+    {% endfor %}
+  </div>
+</section>
+{% elif block.kind == "newsletter" %}
+<section class="container section">
+  <div class="newsletter gachghar-newsletter">
+    <p class="gachghar-section-eyebrow">STAY CONNECTED</p>
+    <h2 id="sec-newsletter">{{ block.title }}</h2>
+    <p>Receive plant care information and updates from GachGhar.</p>
+    <form method="post"
+          action="{% url 'store:newsletter' %}"
+          class="newsletter__form">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'store:home' %}">
+      <label class="visually-hidden" for="newsletter-email">Email address</label>
+      <input id="newsletter-email"
+             type="email"
+             name="email"
+             placeholder="Enter your email address"
+             autocomplete="email"
+             required>
+      <button type="submit" class="btn btn--primary">Subscribe</button>
+    </form>
+  </div>
+</section>
+{% endif %}

@@ -1,0 +1,9 @@
+<nav class="account-nav" aria-label="Account">
+  <a href="{% url 'accounts:dashboard' %}" {% if request.path == '/account/' %}aria-current="page"{% endif %}>Overview</a>
+  <a href="{% url 'accounts:orders' %}">Orders</a>
+  <a href="{% url 'accounts:addresses' %}">Addresses</a>
+  <a href="{% url 'store:wishlist' %}">Wishlist</a>
+  <a href="{% url 'accounts:profile' %}">Profile</a>
+  <a href="{% url 'accounts:password_change' %}">Password</a>
+  <form method="post" action="{% url 'accounts:logout' %}" class="inline-form">{% csrf_token %}<button class="link-btn" type="submit">Log out</button></form>
+</nav>

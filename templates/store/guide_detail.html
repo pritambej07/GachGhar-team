@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ guide.title }}{% endblock %}
+{% block meta_description %}{{ guide.summary|default:guide.title }}{% endblock %}
+{% block content %}
+<div class="container narrow prose">
+  <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="{% url 'store:guides' %}">Plant care guides</a></li><li aria-current="page">{{ guide.title }}</li></ol></nav>
+  <h1 class="page-title">{{ guide.title }}</h1>
+  <div>{{ guide.body|linebreaks }}</div>
+</div>
+{% endblock %}

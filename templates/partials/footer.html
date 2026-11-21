@@ -1,0 +1,30 @@
+{% load static %}
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <img class="footer-logo" src="{% static 'assets/images/branding/gachghar-logo-trimmed.jpg' %}" alt="GachGhar" width="736" height="510" loading="lazy">
+      {% if site.footer_text %}<p class="muted">{{ site.footer_text|linebreaksbr }}</p>{% endif %}
+    </div>
+    <nav aria-label="Shop">
+      <h2 class="footer-title">Shop</h2>
+      <ul>
+        {% for cat in nav_categories %}<li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>{% endfor %}
+      </ul>
+    </nav>
+    <nav aria-label="Help and information">
+      <h2 class="footer-title">Help</h2>
+      <ul>
+        <li><a href="{% url 'store:guides' %}">Plant care guides</a></li>
+        <li><a href="{% url 'store:assistant' %}">Shopping assistant</a></li>
+        {% for p in footer_pages %}<li><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></li>{% endfor %}
+      </ul>
+    </nav>
+    <div>
+      <h2 class="footer-title">Contact</h2>
+      {% if site.contact_email %}<p><a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a></p>{% endif %}
+      {% if site.contact_phone %}<p>{{ site.contact_phone }}</p>{% endif %}
+      {% if site.contact_address %}<p>{{ site.contact_address|linebreaksbr }}</p>{% endif %}
+    </div>
+  </div>
+  <p class="copyright">&copy; GachGhar. All rights reserved.</p>
+</footer>

@@ -1,0 +1,18 @@
+{% load store_tags %}
+<article class="product-card">
+  <a class="product-card__media" href="{{ product.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+    {% with image=product.images.all|first %}
+      {% if image %}
+        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }}" loading="lazy" width="480" height="480">
+      {% else %}
+        <span class="product-card__initial">{{ product.name|slice:":1" }}</span>
+      {% endif %}
+    {% endwith %}
+  </a>
+  <div class="product-card__body">
+    <p class="product-card__cat">{{ product.category.name }}</p>
+    <h3 class="product-card__name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+    <p class="product-card__price">{% if product.variant_count > 1 %}From {% endif %}{{ product.min_price|inr }}</p>
+    {% if product.total_stock == 0 %}<span class="tag tag--muted">Out of stock</span>{% endif %}
+  </div>
+</article>

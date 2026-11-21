@@ -1,0 +1,143 @@
+{% load static %}
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z M9 8V6.5a3 3 0 0 1 6 0V8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.2 4.2 0 0 1 12 7.4 4.2 4.2 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4V7zM3 7l9 4 9-4M12 11v10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="site-header">
+  <div class="site-header__bar">
+    <div class="site-header__start">
+      <button type="button" class="icon-btn only-mobile" data-drawer-open="mobile-nav" aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu">
+        <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+      <a class="site-logo" href="{% url 'store:home' %}" aria-label="GachGhar home">
+        {% if site.logo %}
+          <img src="{{ site.logo.url }}" alt="GachGhar" width="736" height="510">
+        {% else %}
+          <img src="{% static 'assets/images/branding/gachghar-logo-trimmed.jpg' %}" alt="GachGhar" width="736" height="510">
+        {% endif %}
+      </a>
+    </div>
+
+    <nav class="site-nav only-desktop" aria-label="Main navigation">
+      <ul class="site-nav__list">
+        <li class="site-nav__item"><a class="site-nav__link" href="{% url 'store:home' %}">Home</a></li>
+        <li class="site-nav__item site-nav__item--shop">
+          <a class="site-nav__link" href="{% url 'store:products' %}">Shop</a>
+          <div class="mega mega--shop">
+            <div class="mega__inner">
+              <p class="mega__title"><a href="{% url 'store:products' %}">Shop all plants &amp; essentials</a></p>
+              <ul class="mega__list">
+                {% for cat in nav_categories %}
+                  <li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>
+                  {% for child in cat.children.all %}<li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>{% endfor %}
+                {% endfor %}
+              </ul>
+              <a class="mega__all" href="{% url 'store:products' %}">View all products</a>
+            </div>
+          </div>
+        </li>
+        <li class="site-nav__item"><a class="site-nav__link" href="{% url 'store:page' slug='about' %}">About</a></li>
+        <li class="site-nav__item"><a class="site-nav__link" href="{% url 'store:guides' %}">Blogs</a></li>
+        <li class="site-nav__item"><a class="site-nav__link" href="{% url 'store:page' slug='contact' %}">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__end">
+            <details class="header-action header-action--search" data-gachghar-search>
+        <summary class="icon-btn" aria-label="Open product search" title="Search">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+        </summary>
+        <div class="header-popover header-search-popover">
+          <form role="search" action="{% url 'store:search' %}" method="get" data-product-search-form>
+            <label class="visually-hidden" for="gachghar-product-search">Search GachGhar products</label>
+            <input id="gachghar-product-search"
+                   type="search"
+                   name="q"
+                   placeholder="Search plants, pots, seeds and gardening products..."
+                   value="{{ request.GET.q }}"
+                   minlength="2"
+                   required
+                   autocomplete="off">
+            <button type="submit" class="btn btn--primary btn--sm">Search</button>
+            <button type="button" class="header-search-close" data-search-close aria-label="Close search" title="Close search">
+              <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+            </button>
+          </form>
+        </div>
+      </details>
+
+
+      {% if user.is_authenticated %}
+        <a class="icon-btn only-desktop" href="{% url 'store:wishlist' %}" aria-label="Wishlist" title="Wishlist"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></a>
+      {% else %}
+        <a class="icon-btn only-desktop" href="{% url 'accounts:login' %}?next={% url 'store:wishlist' %}" aria-label="Wishlist" title="Log in to view your wishlist"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></a>
+      {% endif %}
+
+      <button type="button" class="icon-btn cart-btn" data-cart-open aria-controls="cart-drawer" aria-expanded="false" aria-label="Open cart, {{ cart_count }} items" title="Cart">
+        <svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg>
+        <span class="badge" data-cart-count>{{ cart_count }}</span>
+      </button>
+
+      <details class="header-action header-account only-desktop">
+        <summary class="icon-btn" aria-label="Account menu" title="My account">
+          <svg class="icon" aria-hidden="true"><use href="#i-user"/></svg>
+        </summary>
+        <div class="header-popover header-account-popover">
+          {% if user.is_authenticated %}
+            <p class="header-account__signed">Signed in as<br><strong>{{ user.get_full_name|default:user.username }}</strong></p>
+            <a href="{% url 'accounts:dashboard' %}">My Profile</a>
+            <a href="{% url 'accounts:orders' %}">My Orders</a>
+            <a href="{% url 'store:wishlist' %}">My Favourites</a>
+          {% else %}
+            <p class="header-account__signed">Welcome to GachGhar</p>
+            <a href="{% url 'accounts:login' %}">Login</a>
+            <a href="{% url 'accounts:register' %}">Register</a>
+          {% endif %}
+        </div>
+      </details>
+    </div>
+  </div>
+
+</header>
+
+<div class="drawer drawer--left" id="mobile-nav" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <div class="drawer__head">
+    <span class="drawer__title">Menu</span>
+    <button type="button" class="icon-btn" data-drawer-close aria-label="Close menu"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+  </div>
+  <nav class="drawer__body" aria-label="Mobile navigation">
+    <ul class="mobile-nav">
+      <li><a href="{% url 'store:home' %}">Home</a></li>
+      <li><a href="{% url 'store:products' %}">Shop All</a></li>
+      <li><a href="{% url 'store:page' slug='about' %}">About</a></li>
+      <li><a href="{% url 'store:guides' %}">Blogs &amp; Plant Care</a></li>
+      <li><a href="{% url 'store:page' slug='contact' %}">Contact</a></li>
+      <li>
+        <details>
+          <summary>Shop by category</summary>
+          <ul>
+            {% for cat in nav_categories %}
+              <li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>
+              {% for child in cat.children.all %}<li><a href="{{ child.get_absolute_url }}">— {{ child.name }}</a></li>{% endfor %}
+            {% endfor %}
+          </ul>
+        </details>
+      </li>
+      <li><a href="{% url 'store:assistant' %}">AI Stylist</a></li>
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'accounts:dashboard' %}">My Profile</a></li>
+        <li><a href="{% url 'accounts:orders' %}">My Orders</a></li>
+        <li><a href="{% url 'store:wishlist' %}">My Favourites</a></li>
+      {% else %}
+        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+        <li><a href="{% url 'accounts:register' %}">Register</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>

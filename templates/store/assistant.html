@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}AI Stylist{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1 class="page-title">Personal AI Stylist</h1>
+  <p class="muted">Your personal plant and shopping assistant. Chat in Bengali or English to discover plants, compare products, get care guidance, manage your cart and wishlist, or check your orders. You complete checkout and payment securely on the store.</p>
+  {% include "partials/assistant_widget.html" with inline=True %}
+</div>
+{% endblock %}

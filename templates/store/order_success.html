@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.number }}{% endblock %}
+{% block content %}
+<div class="container narrow">
+  <h1 class="page-title">Thank you, your order is placed</h1>
+  <p>Order number <strong>{{ order.number }}</strong>. Status: {{ order.get_status_display }}.</p>
+  <p>Payment: {{ order.payment_method|capfirst }} · {{ order.get_payment_status_display|lower }}.</p>
+  <h2>Delivering to</h2>
+  <address>{{ order.shipping_address.full_name }}<br>{{ order.shipping_address.line1 }}{% if order.shipping_address.line2 %}, {{ order.shipping_address.line2 }}{% endif %}<br>{{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.pincode }}</address>
+  {% if order.shipment %}
+    <section class="section-block">
+      <h2>Shipment tracking</h2>
+      <p><strong>Status:</strong> {{ order.shipment.get_status_display }}</p>
+      {% if order.shipment.carrier %}<p><strong>Carrier:</strong> {{ order.shipment.carrier }}</p>{% endif %}
+      {% if order.shipment.tracking_number %}<p><strong>Tracking number:</strong> {{ order.shipment.tracking_number }}</p>{% endif %}
+      {% if order.shipment.estimated_delivery %}<p><strong>Estimated delivery:</strong> {{ order.shipment.estimated_delivery|date:"j M Y" }}</p>{% endif %}
+      {% if order.shipment.tracking_url %}
+        <p><a class="btn btn--primary" href="{{ order.shipment.tracking_url }}" target="_blank" rel="noopener noreferrer">Track package</a></p>
+      {% endif %}
+    </section>
+  {% endif %}
+  {% include "partials/order_summary.html" %}
+  <div class="buy-actions">
+    <a class="btn btn--primary" href="{% url 'accounts:order_invoice' order.number %}">Download invoice PDF</a>
+    {% if order.payment_method == "razorpay" and order.payment_status == "pending" and order.status != "cancelled" %}
+      <a class="btn btn--accent" href="{% url 'store:payment_page' order.number %}">Retry payment</a>
+    {% endif %}
+    {% if user.is_authenticated and order.user_id == user.pk %}<a class="btn btn--ghost" href="{{ order.get_absolute_url }}">View order</a>{% endif %}
+    <a class="btn btn--ghost" href="{% url 'store:products' %}">Continue shopping</a>
+  </div>
+</div>
+{% endblock %}

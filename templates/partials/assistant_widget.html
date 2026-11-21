@@ -1,0 +1,53 @@
+{% comment %}
+GachGhar Personal AI Stylist chat. Existing backend API, confirmation, history, cart and action behaviour are preserved.
+{% endcomment %}
+{% url 'store:assistant_api' as api_url %}
+<div class="gardener{% if inline %} gardener--inline{% endif %}" data-gardener
+     data-api="{{ api_url }}" data-confirm="{% url 'store:assistant_confirm' %}"
+     data-history="{% url 'store:assistant_history' %}" data-clear="{% url 'store:assistant_clear' %}"
+     data-cart-api="{% url 'store:cart_api' %}" data-cart-add="{% url 'store:cart_add' %}"{% if inline %} data-inline="1"{% endif %}>
+  {% if not inline %}
+  <button type="button" class="gardener__launcher" data-gardener-open aria-controls="gardener-panel"
+          aria-expanded="false" aria-label="Open AI Stylist chat">
+    <span class="gardener__sparkle" aria-hidden="true">✦</span>
+    <span class="gardener__launcher-text">AI Stylist</span>
+  </button>
+  {% endif %}
+  <section class="gardener__panel" id="gardener-panel" role="{% if inline %}region{% else %}dialog{% endif %}"
+           aria-label="Personal AI Stylist" {% if not inline %}aria-modal="false" hidden{% endif %}>
+    <header class="gardener__header">
+      <span class="gardener__avatar" aria-hidden="true">✦</span>
+      <div class="gardener__title">
+        <strong>Personal AI Stylist</strong>
+        <span class="gardener__status" data-gardener-status>Your plant &amp; shopping assistant</span>
+      </div>
+      <button type="button" class="gardener__icon-btn" data-gardener-clear aria-label="Start a new chat" title="New chat">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 5V2L7 6.5 12 11V8a5 5 0 1 1-5 5H5a7 7 0 1 0 7-8Z"/></svg>
+      </button>
+      {% if not inline %}
+      <button type="button" class="gardener__icon-btn" data-gardener-close aria-label="Close chat">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="m18.3 5.7-1-1L12 10 6.7 4.7l-1 1L11 11l-5.3 5.3 1 1L12 12l5.3 5.3 1-1L13 11Z"/></svg>
+      </button>
+      {% endif %}
+    </header>
+    <div class="gardener__log" data-gardener-log role="log" aria-live="polite" aria-relevant="additions" tabindex="0">
+      <div class="gardener__msg gardener__msg--bot" data-gardener-welcome>
+        <p>Hello! I’m your Personal AI Stylist. Tell me what kind of plants you’re looking for, ask for care tips, compare products, or get help with your cart and orders. You can chat in Bengali or English.</p>
+      </div>
+      <div class="gardener__chips" data-gardener-chips>
+        <button type="button" class="gardener__chip">Indoor plants for low light</button>
+        <button type="button" class="gardener__chip">Plants under ₹500</button>
+        <button type="button" class="gardener__chip">Show my cart</button>
+        <button type="button" class="gardener__chip">Where is my order?</button>
+        <button type="button" class="gardener__chip">আমার কার্ট দেখাও</button>
+      </div>
+    </div>
+    <form class="gardener__form" data-gardener-form autocomplete="off">
+      <label class="visually-hidden" for="gardener-input{% if inline %}-page{% endif %}">Message your AI Stylist</label>
+      <input id="gardener-input{% if inline %}-page{% endif %}" type="text" name="message" maxlength="500"
+             placeholder="Ask your stylist..." required>
+      <button type="submit" class="gardener__send" aria-label="Send message"><span>Send</span></button>
+    </form>
+    <p class="gardener__note">AI can make mistakes. Prices, stock and orders shown in cards come from our store. Checkout and payment always happen on the secure checkout page.</p>
+  </section>
+</div>

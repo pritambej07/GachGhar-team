@@ -1,0 +1,188 @@
+﻿
+{% extends "base.html" %}
+{% block title %}Online Payment | GachGhar{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="page-title">Complete your payment</h1>
+
+  <div class="checkout-layout">
+    <section class="form-section">
+
+      <form id="csrf-form">
+        {% csrf_token %}
+      </form>
+
+      <p><strong>Order:</strong> {{ order.number }}</p>
+      <p><strong>Amount:</strong> ₹{{ order.total }}</p>
+      <p>Payment is securely processed by Razorpay.</p>
+
+      <button
+        class="btn btn--primary btn--block"
+        id="pay-button"
+        type="button">
+        Pay ₹{{ order.total }} now
+      </button>
+
+      <p class="help">
+        If payment fails, you can return and retry.
+        Your order will remain pending until payment is verified.
+      </p>
+
+    </section>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  const payButton = document.getElementById("pay-button");
+
+  if (!payButton) return;
+
+  payButton.addEventListener("click", function () {
+
+    if (typeof Razorpay !== "function") {
+      alert("Razorpay could not load. Check your internet connection.");
+      return;
+    }
+
+    payButton.disabled = true;
+
+    const options = {
+      key: "{{ razorpay_key|escapejs }}",
+      amount: {{ amount_paise }},
+      currency: "INR",
+
+      name: "GachGhar",
+      description: "Order {{ order.number|escapejs }}",
+      order_id: "{{ order.razorpay_order_id|escapejs }}",
+
+      // UPI: Google Pay and PhonePe
+      config: {
+        display: {
+          blocks: {
+            upi: {
+              name: "Pay using UPI",
+              instruments: [
+                {
+                  method: "upi",
+                  flows: ["intent", "qr"],
+                  apps: ["google_pay", "phonepe"]
+                }
+              ]
+            }
+          },
+
+          // Hide deprecated UPI Collect flow
+          hide: [
+            {
+              method: "upi",
+              flows: ["collect"]
+            }
+          ],
+
+          sequence: ["block.upi"],
+
+          preferences: {
+            show_default_blocks: true
+          }
+        }
+      },
+
+      prefill: {
+        name: "{{ order.shipping_address.full_name|escapejs }}",
+        email: "{{ order.email|escapejs }}",
+        contact: "{{ order.phone|escapejs }}"
+      },
+
+      theme: {
+        color: "#2f6b3b"
+      },
+
+      modal: {
+        ondismiss: function () {
+          payButton.disabled = false;
+          console.log("Payment window closed.");
+        }
+      },
+
+      handler: function (response) {
+
+        const form = document.createElement("form");
+
+        form.method = "POST";
+        form.action = "{% url 'store:verify_payment' %}";
+
+        const csrf = document.querySelector(
+          "[name=csrfmiddlewaretoken]"
+        );
+
+        if (csrf) {
+          const token = document.createElement("input");
+          token.type = "hidden";
+          token.name = "csrfmiddlewaretoken";
+          token.value = csrf.value;
+          form.appendChild(token);
+        }
+
+        [
+          "razorpay_order_id",
+          "razorpay_payment_id",
+          "razorpay_signature"
+        ].forEach(function (key) {
+
+          const input = document.createElement("input");
+
+          input.type = "hidden";
+          input.name = key;
+          input.value = response[key];
+
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+      }
+    };
+
+    try {
+
+      const checkout = new Razorpay(options);
+
+      checkout.on("payment.failed", function (response) {
+
+        const error = response && response.error
+          ? response.error
+          : {};
+
+        console.error("Razorpay Payment Error:", error);
+
+        alert(
+          "Payment failed: " +
+          (error.description || "Please try again.")
+        );
+
+        payButton.disabled = false;
+      });
+
+      checkout.open();
+
+    } catch (error) {
+
+      console.error("Razorpay Checkout Error:", error);
+
+      alert("Unable to open payment. Please try again.");
+
+      payButton.disabled = false;
+    }
+
+  });
+
+})();
+</script>
+
+{% endblock %}

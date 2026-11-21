@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load store_tags %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block meta_description %}{{ product.description|truncatechars:155 }}{% endblock %}
+{% block og_title %}{{ product.name }}{% endblock %}
+{% block head_extra %}{{ jsonld|json_script:"product-jsonld" }}{% endblock %}
+{% block content %}
+<div class="container">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="{% url 'store:home' %}">Home</a></li>
+      {% if product.category.parent %}<li><a href="{{ product.category.parent.get_absolute_url }}">{{ product.category.parent.name }}</a></li>{% endif %}
+      <li><a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></li>
+      <li aria-current="page">{{ product.name }}</li>
+    </ol>
+  </nav>
+
+  <div class="pdp">
+    <div class="pdp__gallery">
+      <div class="pdp__main">
+        {% if images %}
+          <img id="pdp-main" src="{{ images.0.image.url }}" alt="{{ images.0.alt_text|default:product.name }}" width="800" height="800">
+        {% else %}
+          <span class="product-card__initial product-card__initial--lg" aria-hidden="true">{{ product.name|slice:":1" }}</span>
+        {% endif %}
+      </div>
+      {% if images|length > 1 %}
+        <ul class="thumbs">
+          {% for img in images %}
+            <li><button type="button" data-thumb data-src="{{ img.image.url }}" data-alt="{{ img.alt_text|default:product.name }}"
+                        aria-label="Show image {{ forloop.counter }}" {% if forloop.first %}aria-current="true"{% endif %}>
+              <img src="{{ img.image.url }}" alt="" width="72" height="72" loading="lazy"></button></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <div class="pdp__info">
+      <p class="eyebrow">{{ product.category.name }}</p>
+      <h1>{{ product.name }}</h1>
+      {% if review_count %}
+        <p class="rating-line">
+          <span class="rating-stars" aria-label="{{ average_rating }} out of 5 stars">
+            {% for star in "12345" %}<span aria-hidden="true">{% if forloop.counter|star_active:average_rating %}★{% else %}☆{% endif %}</span>{% endfor %}
+          </span>
+          <strong>{{ average_rating }}/5</strong> · from {{ review_count }} review{{ review_count|pluralize }}
+        </p>
+      {% else %}
+        <p class="rating-line muted">No reviews yet · Be the first to review</p>
+      {% endif %}
+
+      <div class="price-row">
+        <span class="price" id="pdp-price">{{ default_variant.price|inr }}</span>
+        <s class="price-was" id="pdp-compare" {% if not default_variant.discount_percent %}hidden{% endif %}>{{ default_variant.compare_at_price|inr }}</s>
+        <span class="discount" id="pdp-discount" {% if not default_variant.discount_percent %}hidden{% endif %}>{{ default_variant.discount_percent }}% off</span>
+      </div>
+
+      <form method="post" action="{% url 'store:cart_add' %}" class="buy-box" data-cart-form>
+        {% csrf_token %}
+        <fieldset class="variants">
+          <legend>Choose an option</legend>
+          {% for v in variants %}
+            <label class="variant{% if v.stock == 0 %} is-disabled{% endif %}">
+              <input type="radio" name="variant_id" value="{{ v.pk }}"
+                     data-price="{{ v.price|inr }}" data-compare="{{ v.compare_at_price|inr }}" data-discount="{{ v.discount_percent }}"
+                     data-stock="{{ v.stock }}" data-low="{{ v.is_low_stock|yesno:'1,0' }}"
+                     {% if v.pk == default_variant.pk %}checked{% endif %} {% if v.stock == 0 %}disabled{% endif %}>
+              <span>{{ v.name }}</span>
+            </label>
+          {% endfor %}
+        </fieldset>
+
+        <div class="qty-row">
+          <div class="qty" role="group" aria-label="Quantity">
+            <button type="button" data-step="-1" aria-label="Decrease quantity">&minus;</button>
+            <input id="qty" name="quantity" type="number" min="1" max="{{ max_quantity }}" value="1" inputmode="numeric" aria-label="Quantity">
+            <button type="button" data-step="1" aria-label="Increase quantity">+</button>
+          </div>
+          <p class="stock-line" id="stock-line" role="status">
+            {% if default_variant.stock == 0 %}Out of stock{% elif default_variant.is_low_stock %}Only {{ default_variant.stock }} left{% else %}In stock{% endif %}
+          </p>
+        </div>
+
+        <div class="buy-actions">
+          <button class="btn btn--primary" type="submit" id="add-btn" {% if default_variant.stock == 0 %}disabled{% endif %}>Add to cart</button>
+          <button class="btn btn--accent" type="submit" name="buy_now" value="1" {% if default_variant.stock == 0 %}disabled{% endif %}>Buy now</button>
+        </div>
+      </form>
+
+      {% if user.is_authenticated %}
+        <button type="button" class="btn btn--ghost" data-wishlist-toggle="{% url 'store:wishlist_toggle' product.pk %}"
+                aria-pressed="{% if in_wishlist %}true{% else %}false{% endif %}">
+          {% if in_wishlist %}Saved to wishlist{% else %}Save to wishlist{% endif %}
+        </button>
+      {% else %}
+        <a class="btn btn--ghost" href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}">Log in to save to wishlist</a>
+      {% endif %}
+
+      {% if product.description %}
+        <section class="pdp-section"><h2>Description</h2><p>{{ product.description|linebreaksbr }}</p></section>
+      {% endif %}
+      {% if product.highlight_lines %}
+        <section class="pdp-section"><h2>Highlights</h2>
+          <ul class="highlights">{% for line in product.highlight_lines %}<li>{{ line }}</li>{% endfor %}</ul>
+        </section>
+      {% endif %}
+      {% with rows=product.specification_rows %}{% if rows %}
+        <section class="pdp-section"><h2>Specifications</h2>
+          <dl class="specs">{% for label, value in rows %}<div><dt>{{ label }}</dt><dd>{{ value }}</dd></div>{% endfor %}</dl>
+        </section>
+      {% endif %}{% endwith %}
+      {% if product.care_instructions %}
+        <section class="pdp-section"><h2>Plant care</h2><p>{{ product.care_instructions|linebreaksbr }}</p></section>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if reviews %}
+    <section class="section" aria-labelledby="reviews-title">
+      <h2 id="reviews-title">Customer reviews</h2>
+      <div class="review-grid">
+        {% for review in reviews %}
+          <blockquote class="review-card">
+            <p class="review-card__rating" aria-label="Rated {{ review.rating }} out of 5">
+              <span class="rating-stars" aria-hidden="true">{% for star in "12345" %}{% if forloop.counter|star_active:review.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+              <span>{{ review.rating }}/5</span>
+            </p>
+            {% if review.title %}<p class="review-card__title">{{ review.title }}</p>{% endif %}
+            <p>{{ review.body }}</p>
+            <footer class="muted">{{ review.user.first_name|default:"Customer" }}</footer>
+          </blockquote>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  <section class="section" id="write-review" aria-labelledby="write-review-title">
+    <h2 id="write-review-title">Write a review</h2>
+    {% if user.is_authenticated %}
+      {% if own_review %}
+        <p class="muted">Your review is currently <strong>{% if own_review.is_approved %}published{% else %}waiting for approval{% endif %}</strong>. Saving changes sends it for approval again.</p>
+      {% endif %}
+      <form method="post" action="{% url 'store:review_submit' product.slug %}" class="form-card">
+        {% csrf_token %}
+        {% include "partials/form_fields.html" with form=review_form %}
+        <button class="btn btn--primary" type="submit">{% if own_review %}Update review{% else %}Submit review{% endif %}</button>
+      </form>
+    {% else %}
+      <p><a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}%23write-review">Log in</a> to share your experience with this product.</p>
+    {% endif %}
+  </section>
+
+  {% if related %}
+    <section class="section" aria-labelledby="related-title">
+      <div class="section-head"><h2 id="related-title">Related products</h2></div>
+      <div class="product-grid">{% for product in related %}{% include "partials/product_card.html" %}{% endfor %}</div>
+    </section>
+  {% endif %}
+
+  {% if recent %}
+    <section class="section" aria-labelledby="recent-title">
+      <div class="section-head"><h2 id="recent-title">Recently viewed</h2></div>
+      <div class="product-grid">{% for product in recent %}{% include "partials/product_card.html" %}{% endfor %}</div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

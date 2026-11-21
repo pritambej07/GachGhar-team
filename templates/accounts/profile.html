@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load store_tags %}
+{% block title %}Account settings{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">Account settings</h1>
+  <div class="account-layout">
+    {% include "partials/account_nav.html" %}
+    <div class="account-main">
+      <section class="section-block">
+        <h2>Profile information</h2>
+        <form method="post" class="form-card" novalidate>
+          {% csrf_token %}
+          {% include "partials/form_fields.html" with form=form %}
+          <button class="btn btn--primary" type="submit">Save changes</button>
+        </form>
+      </section>
+      
+      <section class="section-block">
+        <h2>Password</h2>
+        <p class="muted">Your password is hashed and securely stored. Change it only if needed.</p>
+        <a class="btn btn--ghost" href="{% url 'accounts:password_change' %}">Change password</a>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }}{% endblock %}
+{% block content %}
+<div class="container narrow prose">
+  <h1 class="page-title">{{ page.title }}</h1>
+  {% if page.body %}<div>{{ page.body|linebreaks }}</div>{% endif %}
+  {% if page.slug == "contact" %}
+    <h2>Contact details</h2>
+    {% if site.contact_email %}<p>Email: <a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a></p>{% endif %}
+    {% if site.contact_phone %}<p>Phone: {{ site.contact_phone }}</p>{% endif %}
+    {% if site.contact_address %}<p>{{ site.contact_address|linebreaksbr }}</p>{% endif %}
+    {% if not site.contact_email and not site.contact_phone and not site.contact_address %}
+      <p class="muted">Contact details have not been added yet.</p>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

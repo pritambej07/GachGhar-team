@@ -1,0 +1,46 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env
+db.sqlite3
+media/
+staticfiles/
+*.log
+.DS_Store
+.vscode/
+
+# Backup folders
+backup_*/
+payment_backup/
+
+# Temporary scripts
+_fix_*.py
+_payment_diagnose.py
+_razorpay_test.py
+
+# Environment secrets
+.env.*
+!.env.example
+
+_patch_payment.py
+
+# Editor backup files
+*.backup*
+*.before_safe_professional_update
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Python virtual environments and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local databases and generated files
+*.sqlite3
+staticfiles/
+

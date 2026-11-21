@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ site.hero_heading|default:"Bring Home a Little More Green" }}{% endblock %}
+{% block meta_description %}Discover flowering plants, indoor greenery and gardening essentials for your home, balcony and garden at GachGhar.{% endblock %}
+{% block content %}
+<section class="hero gachghar-hero" aria-labelledby="hero-title">
+  <div class="hero__media" aria-hidden="true">
+    {% if site.hero_image %}
+      <img src="{{ site.hero_image.url }}" alt="" width="1376" height="768">
+    {% else %}
+      <img src="{% static 'assets/images/reference/hero-greenhouse.jpg' %}" alt="" width="1376" height="768">
+    {% endif %}
+  </div>
+  <div class="hero__inner container">
+    <p class="hero__eyebrow">PLANTS · FLOWERS · GARDENING</p>
+    <h1 id="hero-title">{{ site.hero_heading|default:"Bring Home a Little More Green" }}</h1>
+    <p class="hero__text">{{ site.hero_description|default:"Discover beautiful flowering plants, refreshing indoor greenery and everyday gardening essentials for your home, balcony and garden."|linebreaksbr }}</p>
+    <div class="gachghar-hero__actions">
+      <a class="btn btn--primary" href="{% url 'store:products' %}">
+        {{ site.hero_button_text|default:"Shop Plants" }}
+      </a>
+      <a class="btn gachghar-hero__secondary" href="{% url 'store:guides' %}">
+        Explore Plant Care
+      </a>
+    </div>
+  </div>
+</section>
+<section class="container gachghar-home-intro">
+  <p>Find flowering plants, indoor greens and gardening essentials for every green corner.</p>
+</section>
+<div class="gachghar-home-sections">
+  {% for block in sections %}
+    {% include "partials/home_section.html" %}
+  {% empty %}
+    <section class="container section">
+      <div class="empty-state">
+        <h2>Explore GachGhar</h2>
+        <p>Our plant collection is being prepared. Please check back soon.</p>
+        <a class="btn btn--primary" href="{% url 'store:products' %}">Browse Products</a>
+      </div>
+    </section>
+  {% endfor %}
+</div>
+{% endblock %}
