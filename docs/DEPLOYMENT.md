@@ -38,10 +38,11 @@ Create environment variables in the host's secret manager or private `.env` file
 | `DJANGO_ALLOWED_HOSTS` | Comma-separated hostnames only, without schemes |
 | `DJANGO_CSRF_TRUSTED_ORIGINS` | Comma-separated full HTTPS origins |
 | `DATABASE_URL` | Managed PostgreSQL connection URL |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name (non-secret identifier) |
+| `CLOUDINARY_API_KEY` | Cloudinary API key (private Vercel environment variable) |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret (private Vercel environment variable) |
 | `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`, `DEFAULT_FROM_EMAIL` | The chosen transactional SMTP service |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Credentials from the selected Razorpay account; use test credentials before launch |
-| `MEDIA_STORAGE_BACKEND` | Storage class path for production media (e.g. `storages.backends.s3boto3.S3Boto3Storage`). Leave empty for local filesystem. |
-| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_STORAGE_BUCKET_NAME`, `AWS_S3_REGION_NAME`, `AWS_DEFAULT_ACL`, `AWS_S3_FILE_OVERWRITE` | AWS S3 credentials when `MEDIA_STORAGE_BACKEND` uses S3. |
 | `AI_PROVIDER`, `AI_PROVIDER_API_KEY`, `AI_MODEL`, `AI_BASE_URL` | AI provider credentials for the AI Gardener assistant. Leave empty for basic mode. |
 | `AI_RATE_LIMIT_PER_10_MIN`, `AI_DAILY_MESSAGE_LIMIT`, `AI_MAX_OUTPUT_TOKENS`, `AI_TIMEOUT_SECONDS` | AI usage cost controls. |
 
@@ -74,9 +75,18 @@ Collect versioned static assets during release:
 python manage.py collectstatic --noinput
 ```
 
-WhiteNoise serves collected static files. Product and CMS uploads are stored under `MEDIA_ROOT`; configure persistent storage and a web-server or object-storage route for `MEDIA_URL`. Back up uploaded media together with the database. Do not use the development media-serving route in production.
+WhiteNoise serves collected static files. In local development, product and CMS uploads use `MEDIA_ROOT` unless Cloudinary credentials are supplied. Production always uses the `store.storage.CloudinaryMediaStorage` backend and refuses to start without all three Cloudinary environment variables; it never falls back to Vercel's ephemeral filesystem. Existing `ImageField` database values and model schema are unchanged, so this setup does not require a migration. Product image uploads continue through Admin > Products > Product image uploads; category and site branding image fields use the same persistent storage.
 
-For local SQLite data, stop the application before copying `db.sqlite3` and the `media/` directory. For PostgreSQL, use the provider's supported `pg_dump`/restore procedure and test restores on a separate database. Never run destructive restore commands against the live database without explicit approval.
+### Cloudinary setup for Vercel Production
+
+1. Create or select the Cloudinary account and cloud used for GachGhar. Review its plan and usage limits before uploading the catalogue.
+2. In Vercel, open the GachGhar project, then **Settings > Environment Variables**. Add `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`, each scoped to **Production**. Keep the API secret private; do not put it in source control, build logs, or chat.
+3. Existing media files are not automatically copied by changing the storage backend. Before switching production traffic to this code, upload each existing image into Cloudinary with its same relative path as its public ID (for example, a database name `products/aloe.jpg` maps to public ID `products/aloe`, image format `jpg`). Verify those assets are reachable at their expected URLs first. Keep the original local media untouched until verification. This preserves database rows and image names.
+4. Once this code is released through the separately approved deployment process, verify the Vercel Production deployment has all three variables and test a new product image through Admin > Products. Confirm the saved image loads from Cloudinary and remains available after a fresh deployment.
+
+The production environment variables must be present before the app starts with this revision. Do not run a database migration for this storage change. Cloudinary upload/deletion operations affect remote assets; test with non-production assets first and avoid deleting catalogue assets during validation.
+
+For local SQLite data, stop the application before copying `db.sqlite3` and the `media/` directory. For PostgreSQL, use the provider's supported `pg_dump`/restore procedure and test restores on a separate database. Back up Cloudinary media separately from the database. Never run destructive restore commands against the live database without explicit approval.
 
 ### Moving existing SQLite data to PostgreSQL
 

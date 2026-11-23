@@ -114,17 +114,33 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 # Media storage - local filesystem by default. For production with object storage
-# (S3, GCS, Azure Blob, etc.), set MEDIA_STORAGE_BACKEND to a storage class path
-# and configure the matching environment variables.
-# Example for S3 via django-storages:
-#   MEDIA_STORAGE_BACKEND=storages.backends.s3boto3.S3Boto3Storage
-#   AWS_ACCESS_KEY_ID=...
-#   AWS_SECRET_ACCESS_KEY=...
-#   AWS_STORAGE_BUCKET_NAME=...
-#   AWS_S3_REGION_NAME=...
-#   AWS_DEFAULT_ACL=private
-#   AWS_S3_FILE_OVERWRITE=False
-MEDIA_STORAGE_BACKEND = env("MEDIA_STORAGE_BACKEND", "")
+# In production, Cloudinary is required because Vercel's filesystem is ephemeral.
+CLOUDINARY_CLOUD_NAME = env("CLOUDINARY_CLOUD_NAME")
+CLOUDINARY_API_KEY = env("CLOUDINARY_API_KEY")
+CLOUDINARY_API_SECRET = env("CLOUDINARY_API_SECRET")
+CLOUDINARY_CONFIGURED = all((CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET))
+if not DEBUG and not CLOUDINARY_CONFIGURED:
+    raise ImproperlyConfigured(
+        "Production requires CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET "
+        "for persistent media storage."
+    )
+
+if CLOUDINARY_CONFIGURED:
+    import cloudinary
+
+    cloudinary.config(
+        cloud_name=CLOUDINARY_CLOUD_NAME,
+        api_key=CLOUDINARY_API_KEY,
+        api_secret=CLOUDINARY_API_SECRET,
+        secure=True,
+    )
+
+if not DEBUG:
+    MEDIA_STORAGE_BACKEND = "store.storage.CloudinaryMediaStorage"
+else:
+    MEDIA_STORAGE_BACKEND = env("MEDIA_STORAGE_BACKEND", "") or (
+        "store.storage.CloudinaryMediaStorage" if CLOUDINARY_CONFIGURED else "django.core.files.storage.FileSystemStorage"
+    )
 STORAGES = {
     "default": {
         "BACKEND": MEDIA_STORAGE_BACKEND or "django.core.files.storage.FileSystemStorage",

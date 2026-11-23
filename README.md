@@ -61,6 +61,8 @@ Secrets and environment values go in `.env` (never committed) or real environmen
 | Customer reviews | Admin > Reviews (approve to publish) |
 | Payment gateway, AI provider | See `docs/OPERATIONS.md` and `docs/AI_CONFIGURATION.md` |
 
+Product, category, and site branding image uploads use local storage for development. Production requires Cloudinary credentials and stores media persistently there; see [Cloudinary setup in the deployment guide](docs/DEPLOYMENT.md#cloudinary-setup-for-vercel-production). Existing media must be transferred to Cloudinary with matching public IDs before switching production traffic; the database image paths are preserved.
+
 ## Testing
 
 ```powershell

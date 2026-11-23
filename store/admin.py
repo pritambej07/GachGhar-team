@@ -87,6 +87,9 @@ class CategoryAdmin(admin.ModelAdmin):
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1
+    fields = ("image", "alt_text", "sort_order")
+    verbose_name = "product image upload"
+    verbose_name_plural = "product image uploads (stored in configured media storage)"
 
 
 class ProductVariantInline(admin.TabularInline):
