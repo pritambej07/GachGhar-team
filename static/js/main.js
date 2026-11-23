@@ -11,7 +11,13 @@
 
   document.addEventListener("error", function (event) {
     var image = event.target;
-    if (!(image instanceof HTMLImageElement) || !image.hasAttribute("data-image-fallback")) return;
+    if (!(image instanceof HTMLImageElement)) return;
+    if (image.hasAttribute("data-image-thumbnail")) {
+      var thumbnail = image.closest("li");
+      if (thumbnail) thumbnail.hidden = true;
+      return;
+    }
+    if (!image.hasAttribute("data-image-fallback")) return;
     var placeholder = image.parentElement.querySelector("[data-image-fallback-placeholder]");
     if (!placeholder) return;
     image.hidden = true;
@@ -146,11 +152,21 @@
     var list = el("ul", "cart-drawer-list");
     data.lines.forEach(function (line) {
       var item = el("li", "cart-item" + (line.available && line.in_stock ? "" : " is-warning"));
+      var media = el("div", "cart-item__media");
       if (line.image_url) {
         var img = el("img", "cart-item__img");
         img.src = line.image_url; img.alt = ""; img.width = 64; img.height = 64;
-        item.appendChild(img);
+        img.dataset.imageFallback = "";
+        var placeholder = el("span", "cart-item__initial", line.name.slice(0, 1));
+        placeholder.hidden = true;
+        placeholder.dataset.imageFallbackPlaceholder = "";
+        placeholder.setAttribute("aria-hidden", "true");
+        media.appendChild(img);
+        media.appendChild(placeholder);
+      } else {
+        media.appendChild(el("span", "cart-item__initial", line.name.slice(0, 1)));
       }
+      item.appendChild(media);
       var info = el("div", "cart-item__info");
       var link = el("a", null, line.name);
       link.href = line.url;

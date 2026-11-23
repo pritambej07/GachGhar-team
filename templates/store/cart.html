@@ -10,7 +10,12 @@
         {% for line in summary.lines %}
           <li class="cart-line{% if not line.available or not line.in_stock %} is-warning{% endif %}">
             <div class="cart-line__media">
-              {% if line.image_url %}<img src="{{ line.image_url }}" alt="" width="96" height="96" loading="lazy">{% endif %}
+              {% if line.image_url %}
+                <img src="{{ line.image_url }}" alt="" width="96" height="96" loading="lazy" data-image-fallback>
+                <span class="cart-line__initial" data-image-fallback-placeholder hidden aria-hidden="true">{{ line.product_name|slice:":1" }}</span>
+              {% else %}
+                <span class="cart-line__initial" aria-hidden="true">{{ line.product_name|slice:":1" }}</span>
+              {% endif %}
             </div>
             <div class="cart-line__info">
               <h2><a href="{{ line.url }}">{{ line.product_name }}</a></h2>

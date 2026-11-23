@@ -36,6 +36,12 @@ class SeedGachGharContentTests(TestCase):
         self.assertEqual(StaticPage.objects.filter(is_published=True).count(), 6)
         self.assertEqual(Guide.objects.filter(is_published=True).count(), 11)
         self.assertTrue(HomeSection.objects.filter(kind=HomeSection.Kind.GUIDES, enabled=True).exists())
+        for page in StaticPage.objects.filter(is_published=True):
+            with self.subTest(page=page.slug):
+                self.assertEqual(self.client.get(page.get_absolute_url()).status_code, 200)
+        for guide in Guide.objects.filter(is_published=True):
+            with self.subTest(guide=guide.slug):
+                self.assertEqual(self.client.get(guide.get_absolute_url()).status_code, 200)
 
     def test_contact_page_displays_only_configured_owner_details(self):
         SiteSettings.objects.create(

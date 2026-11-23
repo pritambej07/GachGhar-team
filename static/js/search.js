@@ -60,12 +60,24 @@
         option.className = "search-suggestion";
         option.setAttribute("role", "option");
         option.setAttribute("aria-label", item.name + " - ₹" + item.price);
-        var image = document.createElement("img");
         if (item.image_url) {
+          var image = document.createElement("img");
           image.src = item.image_url;
           image.alt = item.name;
           image.loading = "lazy";
+          image.dataset.imageFallback = "";
+          var imageFallback = document.createElement("span");
+          imageFallback.className = "search-suggestion__initial";
+          imageFallback.textContent = item.name.slice(0, 1);
+          imageFallback.hidden = true;
+          imageFallback.setAttribute("aria-hidden", "true");
+        } else {
+          var imageFallback = document.createElement("span");
+          imageFallback.className = "search-suggestion__initial";
+          imageFallback.textContent = item.name.slice(0, 1);
+          imageFallback.setAttribute("aria-hidden", "true");
         }
+        imageFallback.dataset.imageFallbackPlaceholder = "";
         var info = document.createElement("div");
         info.className = "suggestion-info";
         var name = document.createElement("span");
@@ -77,7 +89,8 @@
         if (!item.in_stock) price.classList.add("out-of-stock");
         info.appendChild(name);
         info.appendChild(price);
-        option.appendChild(image);
+        if (item.image_url) option.appendChild(image);
+        option.appendChild(imageFallback);
         option.appendChild(info);
         suggestionsBox.appendChild(option);
       });

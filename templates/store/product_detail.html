@@ -30,7 +30,7 @@
           {% for img in images %}
             <li><button type="button" data-thumb data-src="{{ img.image.url }}" data-alt="{{ img.alt_text|default:product.name }}"
                         aria-label="Show image {{ forloop.counter }}" {% if forloop.first %}aria-current="true"{% endif %}>
-              <img src="{{ img.image.url }}" alt="" width="72" height="72" loading="lazy"></button></li>
+              <img src="{{ img.image.url }}" alt="" width="72" height="72" loading="lazy" data-image-thumbnail></button></li>
           {% endfor %}
         </ul>
       {% endif %}

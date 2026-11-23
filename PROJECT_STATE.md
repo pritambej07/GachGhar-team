@@ -5,16 +5,16 @@
 - This checkout is on the isolated `codex/gachghar-improvements` branch. The existing `main` branch was clean before work started.
 - `python manage.py check`: passed.
 - `python manage.py makemigrations --check --dry-run`: passed; no missing migrations.
-- `python manage.py test`: passed, 213 tests after adding catalogue-seeder, image-fallback, and site-content coverage.
-- `python manage.py collectstatic --noinput`: passed; 6 files copied and 132 unchanged.
+- `python manage.py test`: passed, 214 tests after adding catalogue-seeder, image-fallback, and site-content coverage.
+- `python manage.py collectstatic --noinput`: passed; latest run copied 3 files and left 135 unchanged.
 - `python -m pip check`, JavaScript syntax checks, and `git diff --check`: passed.
 - `python manage.py check --deploy` still reports five warnings because this is the local debug environment; production HTTPS and cookie settings must be verified in Vercel rather than inferred from `.env`.
 - The local `.env` does not configure `DATABASE_URL`, so this checkout uses SQLite. This says nothing about Vercel's environment or Neon; neither is connected to this local session.
 - The existing deployment URL supplied in project notes is <https://gach-ghar-team-jade.vercel.app/>. Live availability and production behavior were not verified from this session.
 - The new production settings guard rejects SQLite when `DJANGO_DEBUG=False`; a targeted startup check confirmed the guard.
-- The safe catalogue command is `python manage.py seed_gachghar_catalogue`. It previews and rolls back by default; `--apply` is required to write. Its tests confirm repeatability, active flags, preservation of existing product data and ledger stock, and no image or stock creation. A local preview identified three category mismatches and skipped them; no local database changes were saved.
-- Product cards and product detail pages now show a branded initial fallback when a stored product-image URL fails; a template regression test covers the detail-page markup. This does not supply or host product photographs.
-- The content command is `python manage.py seed_gachghar_content`; it also previews and rolls back unless `--apply` is supplied. It adds missing policy pages and 11 original care guides, appends a short About addition once, and preserves owner drafts. The local preview left the database unchanged.
+- The safe catalogue command is `python manage.py seed_gachghar_catalogue`. It previews and rolls back by default; `--apply` is required to write. Its tests confirm repeatability, active flags, preservation of existing product data and ledger stock, and no image or stock creation. Local application confirmed all five expected categories active and all 26 catalogue product/SKU pairs active. It reported three existing product/category mismatches for review; no catalogue rows, stock movements, or images were added.
+- Product cards, product details, cart lines, and search suggestions now have branded initial fallbacks when product images are missing or fail to load. Tests cover detail and cart markup. This does not supply or host product photographs.
+- The content command is `python manage.py seed_gachghar_content`; it previews and rolls back unless `--apply` is supplied. Local application added four policy pages, 11 original care guides, a guides homepage section, and a short About addition; it preserved existing Contact copy and guide records. The local database now has six published static pages and 14 published guides.
 - Store migration `0006_sitesettings_grievance_email_and_more` adds configurable legal business and grievance contact fields; it was applied only to the local SQLite database. Production still needs owner-verified values and a separately reviewed migration.
 
 ## Verification snapshot — 21 November 2026
