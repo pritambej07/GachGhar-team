@@ -1,5 +1,17 @@
 # Operations guide
 
+## Store policies, contact disclosures, and care guides
+
+Preview the original policy pages and gardening guides with:
+
+```powershell
+python manage.py seed_gachghar_content
+```
+
+The command rolls back its preview by default. Use `--apply` only after reviewing the target database. It creates missing About, Contact, Privacy, Terms, Shipping, Returns, and care-guide records as published; it preserves existing page and guide copy, appends the About copy only once, and reports unpublished slug conflicts without publishing them. It also adds a care-guide home section when none exists.
+
+In Admin > Site settings, enter verified contact details, legal business name, grievance contact, and contact hours before public launch. These fields are optional in the database so unverified details are never invented. Have the Privacy, Terms, Shipping, and Returns copy reviewed against the actual business and applicable requirements before relying on it as a legal policy. The official [Consumer Protection (E-Commerce) Rules, 2020](https://consumeraffairs.nic.in/sites/default/files/E%20commerce%20rules.pdf) and [Digital Personal Data Protection Rules, 2025](https://www.meity.gov.in/documents/act-and-policies/digital-personal-data-protection-rules-2025-gDOxUjMtQWa) are useful primary references.
+
 ## Creating staff roles
 Staff access uses Django's built-in groups and permissions. Create these groups in Admin > Groups and tick the matching permissions:
 - Product Manager: store | product, product variant, product image, category (add, change).

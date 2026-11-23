@@ -49,6 +49,16 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 "footer_text",
             )
         }),
+        ("Legal and grievance disclosures", {
+            "fields": (
+                "legal_entity_name",
+                "grievance_officer_name",
+                "grievance_email",
+                "grievance_phone",
+                "grievance_hours",
+            ),
+            "description": "Enter only verified owner details. These values appear on the Contact page.",
+        }),
         ("Checkout and shipping", {
             "fields": (
                 "cod_enabled",

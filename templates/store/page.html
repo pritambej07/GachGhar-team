@@ -9,7 +9,15 @@
     {% if site.contact_email %}<p>Email: <a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a></p>{% endif %}
     {% if site.contact_phone %}<p>Phone: {{ site.contact_phone }}</p>{% endif %}
     {% if site.contact_address %}<p>{{ site.contact_address|linebreaksbr }}</p>{% endif %}
-    {% if not site.contact_email and not site.contact_phone and not site.contact_address %}
+    {% if site.legal_entity_name or site.grievance_officer_name or site.grievance_email or site.grievance_phone or site.grievance_hours %}
+      <h2>Business and grievance contact</h2>
+      {% if site.legal_entity_name %}<p>Business name: {{ site.legal_entity_name }}</p>{% endif %}
+      {% if site.grievance_officer_name %}<p>Grievance contact: {{ site.grievance_officer_name }}</p>{% endif %}
+      {% if site.grievance_email %}<p>Email: <a href="mailto:{{ site.grievance_email }}">{{ site.grievance_email }}</a></p>{% endif %}
+      {% if site.grievance_phone %}<p>Phone: {{ site.grievance_phone }}</p>{% endif %}
+      {% if site.grievance_hours %}<p>Contact hours: {{ site.grievance_hours }}</p>{% endif %}
+    {% endif %}
+    {% if not site.contact_email and not site.contact_phone and not site.contact_address and not site.legal_entity_name and not site.grievance_officer_name and not site.grievance_email and not site.grievance_phone and not site.grievance_hours %}
       <p class="muted">Contact details have not been added yet.</p>
     {% endif %}
   {% endif %}

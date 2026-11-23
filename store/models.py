@@ -42,6 +42,13 @@ class SiteSettings(models.Model):
     contact_email = models.EmailField(blank=True)
     contact_phone = models.CharField(max_length=20, blank=True)
     contact_address = models.TextField(blank=True)
+    legal_entity_name = models.CharField(max_length=160, blank=True,
+                                         help_text="Owner-supplied legal business name for customer disclosures.")
+    grievance_officer_name = models.CharField(max_length=120, blank=True)
+    grievance_email = models.EmailField(blank=True)
+    grievance_phone = models.CharField(max_length=20, blank=True)
+    grievance_hours = models.CharField(max_length=120, blank=True,
+                                       help_text="Owner-supplied customer grievance contact hours.")
     footer_text = models.TextField(blank=True)
     cod_enabled = models.BooleanField("cash on delivery enabled", default=False)
     shipping_fee = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"),

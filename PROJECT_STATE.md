@@ -5,7 +5,7 @@
 - This checkout is on the isolated `codex/gachghar-improvements` branch. The existing `main` branch was clean before work started.
 - `python manage.py check`: passed.
 - `python manage.py makemigrations --check --dry-run`: passed; no missing migrations.
-- `python manage.py test`: passed, 210 tests after adding catalogue-seeder and image-fallback coverage.
+- `python manage.py test`: passed, 213 tests after adding catalogue-seeder, image-fallback, and site-content coverage.
 - `python manage.py collectstatic --noinput`: passed; 6 files copied and 132 unchanged.
 - `python -m pip check`, JavaScript syntax checks, and `git diff --check`: passed.
 - `python manage.py check --deploy` still reports five warnings because this is the local debug environment; production HTTPS and cookie settings must be verified in Vercel rather than inferred from `.env`.
@@ -14,6 +14,8 @@
 - The new production settings guard rejects SQLite when `DJANGO_DEBUG=False`; a targeted startup check confirmed the guard.
 - The safe catalogue command is `python manage.py seed_gachghar_catalogue`. It previews and rolls back by default; `--apply` is required to write. Its tests confirm repeatability, active flags, preservation of existing product data and ledger stock, and no image or stock creation. A local preview identified three category mismatches and skipped them; no local database changes were saved.
 - Product cards and product detail pages now show a branded initial fallback when a stored product-image URL fails; a template regression test covers the detail-page markup. This does not supply or host product photographs.
+- The content command is `python manage.py seed_gachghar_content`; it also previews and rolls back unless `--apply` is supplied. It adds missing policy pages and 11 original care guides, appends a short About addition once, and preserves owner drafts. The local preview left the database unchanged.
+- Store migration `0006_sitesettings_grievance_email_and_more` adds configurable legal business and grievance contact fields; it was applied only to the local SQLite database. Production still needs owner-verified values and a separately reviewed migration.
 
 ## Verification snapshot — 21 November 2026
 
