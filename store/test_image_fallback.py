@@ -1,0 +1,20 @@
+from decimal import Decimal
+
+from django.test import TestCase
+
+from .models import Category, Product, ProductImage, ProductVariant
+
+
+class ProductImageFallbackTests(TestCase):
+    def test_product_detail_has_a_fallback_for_a_broken_image_url(self):
+        category = Category.objects.create(name="Indoor", slug="indoor")
+        product = Product.objects.create(name="Aloe Vera", slug="aloe-vera", category=category)
+        ProductVariant.objects.create(product=product, name="Standard", sku="ALOE-1", price=Decimal("99.00"))
+        ProductImage.objects.create(product=product, image="products/missing-aloe.jpg")
+
+        response = self.client.get(product.get_absolute_url())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-image-fallback")
+        self.assertContains(response, "data-image-fallback-placeholder")
+        self.assertContains(response, "missing-aloe.jpg")

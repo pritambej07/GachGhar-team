@@ -1,21 +1,30 @@
-# Production deployment preparation
+# Production deployment
 
-This guide prepares the Django project for a host you choose. It does not select or provision a domain, hosting provider, payment account, or email account.
+The existing deployment target is Vercel at <https://gach-ghar-team-jade.vercel.app/>. The deployment and Neon configuration still need to be verified in the Vercel project. No custom domain, payment account, email account, or persistent media provider has been confirmed here.
 
 ## 1. Runtime and dependencies
 
-- Use Python 3.12 (the recommended runtime in `requirements.txt`) and install the pinned packages in an isolated virtual environment.
+- Use Python 3.13 as selected by `.python-version` and install the pinned packages in an isolated virtual environment.
 - Deploy the project source and migrations. Do not deploy `.env`, `db.sqlite3`, local backups, test reports, or a developer's `staticfiles/` output.
-- The project includes Gunicorn for Linux WSGI hosting. Run it behind a trusted HTTPS reverse proxy; do not expose Django's development server.
+- Vercel's Django runtime detects the root `manage.py` and the configured WSGI/ASGI application; no custom `vercel.json` route or `/api` wrapper is required. With `STATIC_ROOT` configured, Vercel collects and serves static assets through its CDN. See [Vercel's Python runtime documentation](https://vercel.com/docs/functions/runtimes/python).
+- `gunicorn` is included for Linux hosts that need a standalone WSGI server; Vercel's managed Python runtime does not need a separate Gunicorn start command.
 
-For a Render Web Service configured through its dashboard, use:
+For the existing Vercel project:
 
-- Set the Python version to 3.12.x explicitly; the repository does not pin the hosting runtime.
+- Set the Python version to 3.13 (already recorded in `.python-version`).
+- Configure the required environment variables in Vercel's private project settings, including `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, exact allowed hosts and CSRF origins, and a PostgreSQL `DATABASE_URL` for Neon.
+- Keep migrations as a reviewed release operation against the intended database after a verified backup; do not run migrations on every web request.
+- Configure persistent object storage before relying on product or CMS uploads. Vercel function filesystems are not a durable media store.
+- Verify the deployment's build log, runtime logs, Django checks, database backend, and representative customer routes after deployment.
+
+For a standalone Render Web Service configured through its dashboard, use:
+
+- Set the Python version to 3.13.x explicitly.
 - Build command: `pip install -r requirements.txt && python manage.py collectstatic --noinput`
 - Start command: `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
 - Configure `DATABASE_URL` to a managed PostgreSQL database. Do not rely on the service filesystem for SQLite or uploaded media persistence.
 
-`render.yaml` is optional when build/start commands and environment are configured in the dashboard, so this project does not add a provider-specific manifest. Run reviewed migrations as a release/pre-deploy step after taking and verifying a database backup; do not put schema migrations in the build command.
+`render.yaml` is optional when build/start commands and environment are configured in the dashboard. Run reviewed migrations as a release/pre-deploy step after taking and verifying a database backup; do not put schema migrations in the build command.
 
 ## 2. Required private environment
 

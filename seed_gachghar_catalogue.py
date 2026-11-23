@@ -40,40 +40,51 @@ PRODUCTS = [
 def setup_catalogue():
     category_map = {}
     cc = pc = vc = 0
+    conflicts = []
     for slug, name, order in CATEGORIES:
         obj, created = Category.objects.get_or_create(
             slug=slug,
             defaults={"name": name, "is_active": True, "sort_order": order},
         )
+        if not obj.is_active:
+            obj.is_active = True
+            obj.save(update_fields=("is_active",))
         category_map[slug] = obj
         cc += int(created)
     for sku, slug, name, cat, desc, price, variant_name in PRODUCTS:
-        product, created = Product.objects.get_or_create(
-            slug=slug,
-            defaults={
-                "name": name,
-                "category": category_map[cat],
-                "description": desc,
-                "is_active": False,
-                "is_featured": False,
-            },
-        )
-        pc += int(created)
-        if product.category_id != category_map[cat].pk:
-            raise RuntimeError("Product/category mismatch: " + slug)
-        variant, created = ProductVariant.objects.get_or_create(
-            sku=sku,
-            defaults={
-                "product": product,
-                "name": variant_name,
-                "price": Decimal(str(price)),
-                "is_active": False,
-                "stock": 0,
-            },
-        )
-        if variant.product_id != product.pk:
-            raise RuntimeError("SKU already belongs to another product: " + sku)
-        vc += int(created)
+        product = Product.objects.filter(slug=slug).first()
+        variant = ProductVariant.objects.filter(sku=sku).first()
+        if product and product.category_id != category_map[cat].pk:
+            conflicts.append(f"{slug}: existing product belongs to another category; left unchanged")
+            continue
+        if variant and (not product or variant.product_id != product.pk):
+            conflicts.append(f"{sku}: existing SKU belongs to another product; left unchanged")
+            continue
+
+        if product is None:
+            product = Product.objects.create(
+                name=name,
+                slug=slug,
+                category=category_map[cat],
+                description=desc,
+                is_active=True,
+            )
+            pc += 1
+        if variant is not None and not variant.is_active:
+            variant.is_active = True
+            variant.save(update_fields=("is_active",))
+        if variant is None:
+            ProductVariant.objects.create(
+                product=product,
+                name=variant_name,
+                sku=sku,
+                price=Decimal(str(price)),
+                is_active=True,
+            )
+            vc += 1
+        if not product.is_active:
+            product.is_active = True
+            product.save(update_fields=("is_active",))
     HomeSection.objects.get_or_create(
         kind=HomeSection.Kind.CATEGORIES,
         title="Shop by Category",
@@ -83,6 +94,14 @@ def setup_catalogue():
     print("New categories:", cc, "| Total:", Category.objects.count())
     print("New products:", pc, "| Total:", Product.objects.count())
     print("New variants:", vc, "| Total:", ProductVariant.objects.count())
-    print("All 26 products are initially inactive.")
-    print("No fake images or stock quantities have been added.")
-setup_catalogue()
+    print("Matching catalogue entries are active; zero-stock variants remain unpurchasable.")
+    print("Existing prices, SKUs, descriptions, category assignments, and stock are preserved.")
+    print("No stock movements or product images have been added.")
+    if conflicts:
+        print("Skipped for owner review:", len(conflicts))
+        for conflict in conflicts:
+            print("-", conflict)
+
+
+if __name__ == "__main__":
+    setup_catalogue()

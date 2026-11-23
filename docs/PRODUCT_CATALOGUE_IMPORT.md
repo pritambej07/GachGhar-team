@@ -1,6 +1,15 @@
 # Product catalogue import
 
 The owner-supplied 26-product list is encoded in the `import_catalogue` Django management command. It uses the existing `Product`, `ProductVariant`, `Category`, and stock-ledger models.
+
+The separate five-category, 26-product catalogue in `seed_gachghar_catalogue.py` can be applied idempotently with:
+
+```powershell
+python manage.py seed_gachghar_catalogue
+```
+
+By default this is a transactional preview that rolls back all changes. Add `--apply` only after reviewing the target database and preview. Applying activates matching catalogue categories, products, and variants and creates any missing records. It preserves existing names, descriptions, category assignments, prices, SKUs, and stock; records whose product category or SKU ownership conflicts are reported and skipped for review. It never creates stock movements or images. New variants therefore begin with the model's zero-stock default and remain unavailable for purchase until actual inventory is entered through a stock movement. Production data should only be seeded after confirming the configured PostgreSQL database and reviewing the resulting catalogue.
+
 The current database match, price, stock, SKU, and image review is in [PRODUCT_CATALOGUE_REVIEW.csv](./PRODUCT_CATALOGUE_REVIEW.csv).
 The source-image scan found one existing product photo (`media/products/images.jpg`) already attached to the plastic nursery pot, plus only branding and a generic greenhouse reference image. No image was suitable and rights-verified for the remaining products, so no image files were added or reassigned.
 

@@ -84,6 +84,10 @@ DATABASES = {
         conn_max_age=600,
     )
 }
+if not DEBUG and DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
+    raise ImproperlyConfigured(
+        "Production requires DATABASE_URL pointing to PostgreSQL; SQLite is not persistent on serverless hosting."
+    )
 
 AUTH_USER_MODEL = "auth.User"
 AUTHENTICATION_BACKENDS = [

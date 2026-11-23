@@ -200,6 +200,7 @@ label.check input { width: auto; min-height: auto; }
 .product-card__media { display: block; aspect-ratio: 1 / 1; background: var(--pale); }
 .product-card__media img { width: 100%; height: 100%; object-fit: cover; }
 .product-card__initial { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font: 600 64px var(--font-display); color: var(--botanical); }
+.product-card__initial[hidden] { display: none; }
 .product-card__initial--lg { font-size: 120px; min-height: 420px; }
 .product-card__body { padding: 14px 16px 16px; }
 .product-card__cat { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 4px; }

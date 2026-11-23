@@ -19,7 +19,8 @@
     <div class="pdp__gallery">
       <div class="pdp__main">
         {% if images %}
-          <img id="pdp-main" src="{{ images.0.image.url }}" alt="{{ images.0.alt_text|default:product.name }}" width="800" height="800">
+          <img id="pdp-main" src="{{ images.0.image.url }}" alt="{{ images.0.alt_text|default:product.name }}" width="800" height="800" data-image-fallback>
+          <span class="product-card__initial product-card__initial--lg" data-image-fallback-placeholder hidden aria-hidden="true">{{ product.name|slice:":1" }}</span>
         {% else %}
           <span class="product-card__initial product-card__initial--lg" aria-hidden="true">{{ product.name|slice:":1" }}</span>
         {% endif %}

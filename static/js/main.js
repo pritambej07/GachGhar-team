@@ -9,6 +9,15 @@
   var openPanel = null;
   var returnFocus = null;
 
+  document.addEventListener("error", function (event) {
+    var image = event.target;
+    if (!(image instanceof HTMLImageElement) || !image.hasAttribute("data-image-fallback")) return;
+    var placeholder = image.parentElement.querySelector("[data-image-fallback-placeholder]");
+    if (!placeholder) return;
+    image.hidden = true;
+    placeholder.hidden = false;
+  }, true);
+
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) node.className = className;
@@ -252,7 +261,13 @@
     var thumb = event.target.closest("[data-thumb]");
     if (thumb) {
       var main = document.getElementById("pdp-main");
-      if (main) { main.src = thumb.dataset.src; main.alt = thumb.dataset.alt; }
+      if (main) {
+        main.hidden = false;
+        main.src = thumb.dataset.src;
+        main.alt = thumb.dataset.alt;
+        var placeholder = main.parentElement.querySelector("[data-image-fallback-placeholder]");
+        if (placeholder) placeholder.hidden = true;
+      }
       document.querySelectorAll("[data-thumb]").forEach(function (node) {
         node.setAttribute("aria-current", node === thumb ? "true" : "false");
       });

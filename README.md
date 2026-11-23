@@ -82,4 +82,4 @@ The suites cover catalogue visibility, reviews, invoices, delivery rules, shippi
 
 ## Deployment
 
-No domain or hosting provider has been chosen, and this project has not been deployed. Follow [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for production environment variables, PostgreSQL, HTTPS, static/media handling, backups, migrations, and release checks. Serve uploaded media from persistent storage; Django serves media files only in debug mode.
+The project has an existing Vercel deployment at <https://gach-ghar-team-jade.vercel.app/>. Its current availability and production configuration must be checked in Vercel; a URL in project notes is not proof that the latest code, Neon database, or persistent media are working. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for Vercel and alternate-host release steps. Production requires PostgreSQL, and uploaded media must use persistent storage; Django serves local media only in debug mode.
