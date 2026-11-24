@@ -34,6 +34,23 @@ SORT_LABELS = {"recommended": "Recommended", "price_asc": "Price: low to high",
 MAX_FILTER_PRICE = Decimal("99999999.99")
 MAX_FILTER_PRICE_LENGTH = 16
 
+STATIC_PAGE_FALLBACKS = {
+    "about": {
+        "title": "About GachGhar",
+        "body": (
+            "GachGhar is for people who find joy in growing plants and bringing nature into everyday spaces. "
+            "We want gardening to feel approachable, whether you are caring for your first pot or tending a garden."
+        ),
+    },
+    "contact": {
+        "title": "Contact GachGhar",
+        "body": (
+            "We are here to help with your GachGhar experience. For an existing order, sign in to your account "
+            "and visit My Orders. For product, plant-care, or general questions, send us a message below."
+        ),
+    },
+}
+
 
 def _finite_decimal(value):
     if not isinstance(value, str) or len(value) > MAX_FILTER_PRICE_LENGTH:
@@ -257,7 +274,14 @@ def review_submit(request, slug):
 
 
 def page(request, slug):
-    static_page = get_object_or_404(StaticPage, slug=slug, is_published=True)
+    static_page = StaticPage.objects.filter(slug=slug).first()
+    if static_page is not None and not static_page.is_published:
+        raise Http404
+    if static_page is None:
+        fallback = STATIC_PAGE_FALLBACKS.get(slug)
+        if fallback is None:
+            raise Http404
+        static_page = StaticPage(slug=slug, **fallback)
     contact_form = None
     if slug == "contact":
         contact_form = ContactForm(request.POST or None)

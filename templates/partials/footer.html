@@ -16,11 +16,14 @@
       <ul>
         <li><a href="{% url 'store:guides' %}">Plant care guides</a></li>
         <li><a href="{% url 'store:assistant' %}">Shopping assistant</a></li>
+        <li><a href="{% url 'store:page' slug='about' %}">About GachGhar</a></li>
+        <li><a href="{% url 'store:blog' %}">Blog</a></li>
         {% for p in footer_pages %}<li><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></li>{% endfor %}
       </ul>
     </nav>
     <div>
       <h2 class="footer-title">Contact</h2>
+      <p><a href="{% url 'store:page' slug='contact' %}">Contact GachGhar</a></p>
       {% if site.contact_email %}<p><a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a></p>{% endif %}
       {% if site.contact_phone %}<p>{{ site.contact_phone }}</p>{% endif %}
       {% if site.contact_address %}<p>{{ site.contact_address|linebreaksbr }}</p>{% endif %}
