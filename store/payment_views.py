@@ -92,7 +92,13 @@ def verify_payment(request):
     oid = request.POST.get("razorpay_order_id", "")
     pid = request.POST.get("razorpay_payment_id", "")
     sig = request.POST.get("razorpay_signature", "")
-    order = get_object_or_404(Order, razorpay_order_id=oid)
+    if not oid or not pid or not sig:
+        return HttpResponse("Payment verification failed.", status=400)
+    order = get_object_or_404(
+        Order,
+        razorpay_order_id=oid,
+        payment_method="razorpay",
+    )
     is_owner = request.user.is_authenticated and order.user_id == request.user.pk
     is_guest_owner = order.number in request.session.get("recent_orders", [])
     if not (is_owner or is_guest_owner):

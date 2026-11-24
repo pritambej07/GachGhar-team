@@ -150,7 +150,8 @@ class GuestCheckoutPaymentSessionTests(TestCase):
         return order
 
     def test_browser_guest_cod_checkout(self):
-        self.assert_browser_checkout(username=None, payment_method="cod")
+        order = self.assert_browser_checkout(username=None, payment_method="cod")
+        self.assertEqual(order.payment_status, Order.PaymentStatus.PENDING)
 
     def test_browser_guest_razorpay_checkout(self):
         self.assert_browser_checkout(username=None, payment_method="razorpay")
@@ -509,6 +510,29 @@ class PaymentRecoveryTests(TestCase):
         self.assertEqual(self.order.payment_status, Order.PaymentStatus.PAID)
         self.assertEqual(self.order.razorpay_payment_id, "pay_payment_123")
         self.assertIsNotNone(self.order.payment_verified_at)
+
+    def test_verify_payment_rejects_empty_razorpay_order_id(self):
+        client = mock.Mock()
+        client.payment.fetch.return_value = {
+            "status": "captured",
+            "amount": 55000,
+            "currency": "INR",
+            "order_id": "",
+        }
+
+        with mock.patch("store.payment_views.verify_checkout_signature") as verify:
+            with mock.patch("store.payment_views.get_client", return_value=client):
+                response = self.client.post(reverse("store:verify_payment"), {
+                    "razorpay_order_id": "",
+                    "razorpay_payment_id": "pay_invalid_order",
+                    "razorpay_signature": "valid-signature",
+                })
+
+        self.assertEqual(response.status_code, 400)
+        verify.assert_not_called()
+        client.payment.fetch.assert_not_called()
+        self.order.refresh_from_db()
+        self.assertEqual(self.order.payment_status, Order.PaymentStatus.PENDING)
 
     def test_notification_failure_does_not_report_verified_payment_as_failed(self):
         self.order.razorpay_order_id = "order_notification_failure"

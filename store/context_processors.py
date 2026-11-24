@@ -11,7 +11,7 @@ def site_context(request):
     return {
         "site": SiteSettings.load(),
         "nav_categories": top_categories,
-        "footer_pages": StaticPage.objects.filter(is_published=True),
+        "footer_pages": StaticPage.objects.filter(is_published=True).exclude(slug__in=("about", "contact")),
         "cart_count": cart_item_count(request),
         "max_quantity": settings.CART_MAX_QUANTITY,
     }

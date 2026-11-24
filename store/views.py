@@ -1,10 +1,13 @@
 import json
 from decimal import Decimal, InvalidOperation
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
+from django.core.mail import send_mail
+from django.db import connection
 from django.db.models import Avg, Q
 from django.http import Http404, HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
@@ -14,9 +17,9 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from . import ai_services
-from .forms import ReviewForm
+from .forms import ContactForm, ReviewForm
 from .models import (Category, Guide, HomeSection, NewsletterSubscriber, Product, Review, StaticPage,
-                     WishlistItem)
+                     WishlistItem, BlogPost, SiteSettings)
 from .services import visible_products
 
 PAGE_SIZE = 12
@@ -31,6 +34,23 @@ SORT_LABELS = {"recommended": "Recommended", "price_asc": "Price: low to high",
                "price_desc": "Price: high to low", "newest": "Newest"}
 MAX_FILTER_PRICE = Decimal("99999999.99")
 MAX_FILTER_PRICE_LENGTH = 16
+
+STATIC_PAGE_FALLBACKS = {
+    "about": {
+        "title": "About GachGhar",
+        "body": (
+            "GachGhar is for people who find joy in growing plants and bringing nature into everyday spaces. "
+            "We want gardening to feel approachable, whether you are caring for your first pot or tending a garden."
+        ),
+    },
+    "contact": {
+        "title": "Contact GachGhar",
+        "body": (
+            "We are here to help with your GachGhar experience. For an existing order, sign in to your account "
+            "and visit My Orders. For product, plant-care, or general questions, send us a message below."
+        ),
+    },
+}
 
 
 def _finite_decimal(value):
@@ -86,7 +106,9 @@ def _listing(request, base_qs, *, title, description="", category=None):
 
 def home(request):
     sections = []
+    kinds = set()
     for section in HomeSection.objects.filter(enabled=True).select_related("category"):
+        kinds.add(section.kind)
         block = {"kind": section.kind, "title": section.title or section.get_kind_display(), "category": section.category}
         if section.kind == HomeSection.Kind.FEATURED:
             block["products"] = visible_products().filter(is_featured=True)[:8]
@@ -109,6 +131,22 @@ def home(request):
         if block.get("reviews") is not None and not block["reviews"]:
             continue
         sections.append(block)
+
+    active_categories = Category.objects.filter(is_active=True, parent__isnull=True)
+    active_products = visible_products()
+    if "categories" not in kinds and active_categories.exists():
+        sections.insert(0, {
+            "kind": "categories",
+            "title": "Shop by category",
+            "categories": active_categories,
+        })
+    if "featured" not in kinds and "category_products" not in kinds and active_products.exists():
+        featured_products = active_products.filter(is_featured=True)
+        sections.append({
+            "kind": "featured",
+            "title": "Featured plants and essentials",
+            "products": featured_products[:8] if featured_products.exists() else active_products[:8],
+        })
     return render(request, "store/home.html", {"sections": sections})
 
 
@@ -237,8 +275,40 @@ def review_submit(request, slug):
 
 
 def page(request, slug):
-    static_page = get_object_or_404(StaticPage, slug=slug, is_published=True)
-    return render(request, "store/page.html", {"page": static_page})
+    static_page = StaticPage.objects.filter(slug=slug).first()
+    if static_page is not None and not static_page.is_published:
+        raise Http404
+    if static_page is None:
+        fallback = STATIC_PAGE_FALLBACKS.get(slug)
+        if fallback is None:
+            raise Http404
+        static_page = StaticPage(slug=slug, **fallback)
+    contact_form = None
+    if slug == "contact":
+        contact_form = ContactForm(request.POST or None)
+        if request.method == "POST" and contact_form.is_valid():
+            cleaned = contact_form.cleaned_data
+            recipient = SiteSettings.load().contact_email or getattr(settings, "EMAIL_HOST_USER", "")
+            backend = getattr(settings, "EMAIL_BACKEND", "")
+            if not recipient or "console.EmailBackend" in backend:
+                from django.contrib import messages
+                messages.warning(request, "We could not send this message because email delivery is not configured.")
+            else:
+                try:
+                    sent = send_mail(
+                        f"GachGhar contact from {cleaned['name']}",
+                        f"Name: {cleaned['name']}\nEmail: {cleaned['email']}\nPhone: {cleaned['phone'] or 'Not provided'}\n\n{cleaned['message']}",
+                        settings.DEFAULT_FROM_EMAIL,
+                        [recipient],
+                        fail_silently=False,
+                    )
+                except Exception:
+                    sent = 0
+                if sent:
+                    from django.contrib import messages
+                    messages.success(request, "Thank you. Your message was sent.")
+                    contact_form = ContactForm()
+    return render(request, "store/page.html", {"page": static_page, "contact_form": contact_form})
 
 
 def guides(request):
@@ -248,6 +318,23 @@ def guides(request):
 def guide_detail(request, slug):
     guide = get_object_or_404(Guide, slug=slug, is_published=True)
     return render(request, "store/guide_detail.html", {"guide": guide})
+
+
+def blog(request):
+    if BlogPost._meta.db_table in connection.introspection.table_names():
+        posts = BlogPost.objects.filter(is_published=True)
+    else:
+        # A code-first release may reach Production before its reviewed schema
+        # migration. Keep the public route healthy until BlogPost is available.
+        posts = []
+    return render(request, "store/blog.html", {"posts": posts})
+
+
+def blog_detail(request, slug):
+    if BlogPost._meta.db_table not in connection.introspection.table_names():
+        raise Http404
+    post = get_object_or_404(BlogPost, slug=slug, is_published=True)
+    return render(request, "store/blog_detail.html", {"post": post})
 
 
 @require_POST

@@ -1,0 +1,114 @@
+[
+  {
+    "slug": "flowering-plant-care-basics",
+    "title": "A Practical Guide to Caring for Flowering Plants",
+    "summary": "Learn the basics of sunlight, watering, drainage and regular care for flowering plants.",
+    "body": "Sunlight: Most flowering plants grow and bloom best with suitable sunlight. Check the needs of each variety before choosing its position. Protect plants that prefer partial shade from harsh afternoon sun.\nWatering: Check the growing medium before watering. Water when the upper layer begins to dry, while avoiding both prolonged dryness and waterlogged soil.\nDrainage: Use pots with drainage holes. Do not leave plant roots standing in collected water.\nFeeding: Use a suitable garden fertiliser according to its label and the needs of the plant. Avoid applying more than recommended.\nPruning and maintenance: Remove dead leaves and spent flowers when appropriate. Inspect leaves and stems regularly for pests or disease.\nSeasonal care: Flowering time and care requirements differ by plant variety and local weather. Follow the specific guidance for each plant.",
+    "is_published": true,
+    "sort_order": 10
+  },
+  {
+    "slug": "choosing-plants-for-balconies",
+    "title": "How to Choose Plants for a Balcony",
+    "summary": "Choose suitable plants by checking sunlight, available space, wind and pot requirements.",
+    "body": "Observe the light: Notice how many hours of direct sunlight your balcony receives and whether the light is strongest in the morning or afternoon.\nChoose suitable plants: Select varieties whose light and temperature needs match your balcony. Flowering plants often need more sunlight than many foliage plants.\nCheck space: Consider the mature size of each plant, not only its size when purchased. Leave enough room for airflow and maintenance.\nSelect containers: Use a suitable pot with drainage holes. Choose a container size appropriate for the plant's root system.\nWater carefully: Balconies can become hot and windy. Check the soil regularly, but do not water automatically on a fixed schedule.\nKeep plants healthy: Remove dead foliage and check for pests regularly. Rotate pots when needed so plants receive suitable light.",
+    "is_published": true,
+    "sort_order": 10
+  },
+  {
+    "slug": "watering-potted-plants",
+    "title": "How to Water Potted Plants Properly",
+    "summary": "Understand soil moisture, drainage and practical watering habits for container plants.",
+    "body": "Check the soil first: Touch the upper layer of the growing medium. Watering needs vary with plant type, pot size, weather and growing conditions.\nWater thoroughly: When a plant needs water, apply it evenly to the growing medium until excess water drains from the bottom.\nAvoid standing water: Empty water collected in outer trays when appropriate. Constantly wet soil can damage roots.\nAdjust with the seasons: Pots may dry faster in hot or windy weather and more slowly during cooler or humid periods.\nKnow your plant: Succulents, tropical foliage plants and flowering plants can have different watering requirements. Follow plant-specific care guidance.\nUse suitable pots: Drainage holes and a well-aerated growing medium help prevent waterlogging.",
+    "is_published": true,
+    "sort_order": 10
+  },
+  {
+    "slug": "indoor-plant-care",
+    "title": "How to Care for Indoor Plants",
+    "summary": "Match light and watering to each plant's needs.",
+    "body": "Start by checking the light in the place where the plant will live. Many foliage plants prefer bright, indirect light; direct sun can be too strong for some varieties.\n\nCheck the growing medium before watering instead of following a fixed calendar. Water thoroughly when the plant needs it, and use a pot with drainage so roots do not sit in water.\n\nKeep leaves clean, turn the pot occasionally for even growth, and check for pests when watering. Change one care condition at a time so you can see how the plant responds.",
+    "is_published": true,
+    "sort_order": 0
+  },
+  {
+    "slug": "hibiscus-plant-care",
+    "title": "Hibiscus Plant Care",
+    "summary": "Give hibiscus suitable light, moisture, and room to grow.",
+    "body": "Hibiscus generally grows and flowers best in a bright, sunny position. Introduce a plant to stronger sunlight gradually, especially after moving it from a sheltered nursery.\n\nKeep the soil evenly moist during active growth, while allowing excess water to drain. Watering frequency changes with temperature, pot size, and weather.\n\nRemove spent flowers and damaged leaves with clean tools. Watch for common sap-feeding pests and address them early with a plant-safe method.",
+    "is_published": true,
+    "sort_order": 0
+  },
+  {
+    "slug": "rose-plant-care",
+    "title": "Rose Plant Care",
+    "summary": "Support healthy roses with light, airflow, and careful watering.",
+    "body": "Choose a position with several hours of suitable direct sunlight and enough airflow around the plant. Use a container with drainage or prepare garden soil that does not remain waterlogged.\n\nWater the soil rather than repeatedly wetting the leaves, and adjust as the weather changes. Feed only according to the product label and the plant's growth stage.\n\nRemove spent blooms and dead growth with clean pruners. Inspect new growth regularly for pests or leaf spots.",
+    "is_published": true,
+    "sort_order": 0
+  },
+  {
+    "slug": "money-plant-care",
+    "title": "Money Plant Care",
+    "summary": "A practical care guide for pothos and other money plants.",
+    "body": "Money plants such as pothos grow well in bright, indirect light and can tolerate lower light, though growth may slow. Avoid harsh midday sun on tender leaves.\n\nLet the top layer of potting mix begin to dry before watering. Drain excess water and use an airy mix so roots are not kept constantly wet.\n\nTrim long vines to encourage a fuller shape. You can root healthy cuttings in water or a suitable growing medium, and keep the plant away from pets that may chew it.",
+    "is_published": true,
+    "sort_order": 0
+  },
+  {
+    "slug": "snake-plant-care",
+    "title": "Snake Plant Care",
+    "summary": "Keep snake plants healthy with bright light and careful watering.",
+    "body": "Snake plants tolerate a range of indoor light, from lower light to bright indirect light. Growth is usually stronger with more suitable light, but avoid sudden changes to intense sun.\n\nAllow the potting mix to dry well between waterings. A free-draining mix and a pot with drainage holes help reduce the risk of root rot.\n\nWipe dust from the leaves and remove damaged leaves at the base with clean tools. Water less often in cool or low-light conditions.",
+    "is_published": true,
+    "sort_order": 0
+  },
+  {
+    "slug": "tulsi-plant-care",
+    "title": "Tulsi Plant Care",
+    "summary": "Grow Tulsi in a bright spot and respond to its soil and weather.",
+    "body": "Tulsi generally prefers a warm, bright location with several hours of sunlight. Protect it from cold conditions and allow good airflow around the foliage.\n\nWater when the upper growing medium begins to dry, then let excess water drain. Avoid leaving the pot standing in water, especially during cooler weather.\n\nPinch growing tips to encourage branching and remove flowers or dry leaves as needed. Check the plant regularly for insects and adjust care to the local season.",
+    "is_published": true,
+    "sort_order": 0
+  },
+  {
+    "slug": "watering-schedules",
+    "title": "How to Build a Watering Schedule",
+    "summary": "Use soil checks and plant signals instead of a rigid timetable.",
+    "body": "There is no single watering schedule for every plant. Pot size, material, drainage, plant species, light, temperature, and season all affect how quickly soil dries.\n\nCheck the upper soil with a finger or moisture tool. When the plant's needs call for water, water evenly until excess drains, then empty standing water from a saucer.\n\nKeep brief notes for each plant and adjust after observing it. Yellowing, wilting, or persistently wet soil can have several causes, so check roots, light, and drainage before changing the amount of water.",
+    "is_published": true,
+    "sort_order": 0
+  },
+  {
+    "slug": "soil-preparation",
+    "title": "Preparing Soil for Pots and Garden Beds",
+    "summary": "Choose a growing medium that supports roots and drains well.",
+    "body": "Different plants need different growing media. For containers, use a mix intended for pots rather than heavy garden soil alone, which can compact and drain poorly in a container.\n\nBefore planting, check that the pot has drainage holes and remove large debris from the mix. Moisten dry media lightly so it holds together without becoming waterlogged.\n\nReuse a growing medium only when it is healthy and appropriate for the next plant. Do not reuse material from plants with serious root disease or pest problems.",
+    "is_published": true,
+    "sort_order": 0
+  },
+  {
+    "slug": "organic-compost",
+    "title": "Using Organic Compost in the Garden",
+    "summary": "Use mature compost thoughtfully and in suitable amounts.",
+    "body": "Well-finished compost is dark, crumbly, and has an earthy smell. Unfinished material can heat up or continue decomposing, so allow it to mature before using it around plants.\n\nMix compost into suitable garden soil or apply it as a modest top dressing. For pots, follow the plant's needs and the compost product label; too much compost can hold excess moisture or concentrate nutrients.\n\nStore compost covered and dry enough to avoid runoff or odour. Wash hands after handling and keep compost away from edible plant parts.",
+    "is_published": true,
+    "sort_order": 0
+  },
+  {
+    "slug": "balcony-gardening",
+    "title": "Getting Started with Balcony Gardening",
+    "summary": "Plan a balcony garden around sunlight, space, and safe watering.",
+    "body": "Observe the balcony through the day to learn where direct sun falls and how wind moves. Choose plants and containers suited to those conditions rather than buying for appearance alone.\n\nCheck the mature size of each plant and leave room for airflow and care. Use pots with drainage and prevent runoff from affecting neighbours or building surfaces.\n\nStart with a few manageable plants. Group varieties with similar light and watering needs, then expand as you learn how the balcony changes through the seasons.",
+    "is_published": true,
+    "sort_order": 0
+  },
+  {
+    "slug": "seasonal-gardening-india",
+    "title": "Seasonal Gardening in India",
+    "summary": "Adjust plant care as heat, monsoon rain, and cooler weather change.",
+    "body": "Across India, local climate and elevation vary widely, so use local weather and each plant's needs as your guide. During hot periods, check containers more often and protect shade-loving plants from harsh afternoon sun.\n\nDuring monsoon weather, check drainage and reduce watering when rain keeps the growing medium wet. Move pots out of persistent standing water and watch for fungal problems in crowded, humid spaces.\n\nIn cooler months, growth may slow and soil may dry more slowly. Reduce watering when appropriate, protect sensitive plants from cold nights, and resume pruning or feeding only when active growth returns.",
+    "is_published": true,
+    "sort_order": 0
+  }
+]

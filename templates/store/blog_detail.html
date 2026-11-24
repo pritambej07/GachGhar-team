@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block meta_description %}{{ post.summary|default:post.title }}{% endblock %}
+{% block content %}
+<article class="container narrow prose">
+  {% if post.featured_image %}
+    <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" loading="lazy">
+  {% endif %}
+  <h1 class="page-title">{{ post.title }}</h1>
+  {% if post.published_at %}<p class="muted">Published {{ post.published_at|date:"d M Y" }}</p>{% endif %}
+  {% if post.summary %}<p class="lead">{{ post.summary }}</p>{% endif %}
+  {{ post.body|linebreaks }}
+</article>
+{% endblock %}

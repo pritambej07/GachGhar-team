@@ -30,6 +30,12 @@ urlpatterns = [
     path("order/<str:number>/thank-you/", commerce.order_success, name="order_success"),
     path("guides/", views.guides, name="guides"),
     path("guides/<slug:slug>/", views.guide_detail, name="guide"),
+    path("blog/", views.blog, name="blog"),
+    path("blog/<slug:slug>/", views.blog_detail, name="blog_detail"),
+    # Keep the public editorial URLs short and stable. The older /pages/<slug>/
+    # routes remain available for existing links and integrations.
+    path("about/", views.page, {"slug": "about"}, name="about"),
+    path("contact/", views.page, {"slug": "contact"}, name="contact"),
     path("pages/<slug:slug>/", views.page, name="page"),
     path("newsletter/", views.newsletter_subscribe, name="newsletter"),
     path("assistant/", views.assistant_page, name="assistant"),

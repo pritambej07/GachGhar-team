@@ -20,6 +20,14 @@
     {% if not site.contact_email and not site.contact_phone and not site.contact_address and not site.legal_entity_name and not site.grievance_officer_name and not site.grievance_email and not site.grievance_phone and not site.grievance_hours %}
       <p class="muted">Contact details have not been added yet.</p>
     {% endif %}
+    {% if contact_form %}
+      <h2>Send a message</h2>
+      <form method="post" class="form-card" novalidate>
+        {% csrf_token %}
+        {{ contact_form.as_p }}
+        <button type="submit" class="btn btn--primary">Send message</button>
+      </form>
+    {% endif %}
   {% endif %}
 </div>
 {% endblock %}

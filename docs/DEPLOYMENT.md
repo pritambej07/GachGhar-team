@@ -12,7 +12,7 @@ The existing deployment target is Vercel at <https://gach-ghar-team-jade.vercel.
 For the existing Vercel project:
 
 - Set the Python version to 3.13 (already recorded in `.python-version`).
-- The `codex/gachghar-improvements` branch is excluded from automatic Vercel deployments in `vercel.json`; the `main` branch behavior is unchanged.
+- `main` is the Production branch. Pushing `codex/gachghar-improvements` does not update the live Production site; merge to `main` only after the database and backup release checks below are complete. Vercel project settings are not available in this checkout, so confirm the Production branch and deployment target in the Vercel dashboard before release.
 - Configure the required environment variables in Vercel's private project settings, including `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, exact allowed hosts and CSRF origins, and a PostgreSQL `DATABASE_URL` for Neon.
 - Keep migrations as a reviewed release operation against the intended database after a verified backup; do not run migrations on every web request.
 - Configure persistent object storage before relying on product or CMS uploads. Vercel function filesystems are not a durable media store.

@@ -1,10 +1,12 @@
 
 from django.contrib import admin, messages
 from django.core.exceptions import ValidationError
+from django.db import connection
 
 from . import services
 from .models import (
     AssistantActionLog,
+    BlogPost,
     Cart,
     Category,
     Coupon,
@@ -387,6 +389,20 @@ class GuideAdmin(admin.ModelAdmin):
     )
     list_editable = ("is_published", "sort_order")
     exclude = ("slug",)
+
+
+@admin.register(BlogPost)
+class BlogPostAdmin(admin.ModelAdmin):
+    list_display = ("title", "is_published", "published_at", "updated_at")
+    list_filter = ("is_published",)
+    search_fields = ("title", "summary", "body")
+    list_editable = ("is_published",)
+    exclude = ("slug", "published_at")
+
+    def get_model_perms(self, request):
+        if self.model._meta.db_table not in connection.introspection.table_names():
+            return {}
+        return super().get_model_perms(request)
 
 
 @admin.register(StaticPage)
