@@ -80,6 +80,18 @@ class PublicContentTests(TestCase):
         self.assertContains(contact, "Send a message")
         self.assertEqual(self.client.get(reverse("store:page", args=["privacy"])).status_code, 404)
 
+    def test_short_about_and_contact_routes_render_and_are_used_in_navigation(self):
+        about = self.client.get(reverse("store:about"))
+        contact = self.client.get(reverse("store:contact"))
+
+        self.assertEqual(about.status_code, 200)
+        self.assertContains(about, "About GachGhar")
+        self.assertEqual(contact.status_code, 200)
+        self.assertContains(contact, "Send a message")
+        home = self.client.get(reverse("store:home"))
+        self.assertContains(home, reverse("store:about"))
+        self.assertContains(home, reverse("store:contact"))
+
     def test_unpublished_about_page_does_not_use_public_fallback(self):
         StaticPage.objects.create(slug="about", title="Draft About", is_published=False)
 
@@ -88,8 +100,8 @@ class PublicContentTests(TestCase):
     def test_footer_links_about_and_contact_without_page_records(self):
         response = self.client.get(reverse("store:home"))
 
-        self.assertContains(response, reverse("store:page", args=["about"]))
-        self.assertContains(response, reverse("store:page", args=["contact"]))
+        self.assertContains(response, reverse("store:about"))
+        self.assertContains(response, reverse("store:contact"))
         self.assertContains(response, reverse("store:blog"))
 
     def test_contact_post_is_validated_without_claiming_delivery(self):
