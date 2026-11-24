@@ -6,6 +6,12 @@ from .tests import make_product
 
 
 class PublicContentTests(TestCase):
+    def test_empty_blog_shows_empty_state(self):
+        response = self.client.get(reverse("store:blog"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No published blog posts yet")
+
     def test_homepage_falls_back_to_active_categories_and_products(self):
         category = Category.objects.create(name="Indoor Plants", is_active=True)
         product, _ = make_product(name="Fallback Plant")
