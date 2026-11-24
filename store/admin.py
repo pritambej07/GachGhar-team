@@ -2,6 +2,8 @@
 from django.contrib import admin, messages
 from django.core.exceptions import ValidationError
 from django.db import connection
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from . import services
 from .models import (
@@ -26,10 +28,33 @@ from .models import (
     StaticPage,
     StockMovement,
 )
+from .storage import CloudinaryUploadError
+
+
+class CloudinaryUploadAdminMixin:
+    """Roll back admin saves cleanly when persistent image storage is unavailable."""
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        try:
+            return super().changeform_view(request, object_id, form_url, extra_context)
+        except CloudinaryUploadError:
+            self.message_user(
+                request,
+                "The image could not be uploaded to persistent storage. No changes from this save were kept; check the media configuration and try again.",
+                level=messages.ERROR,
+            )
+            action = "change" if object_id else "add"
+            opts = self.model._meta
+            url = reverse(
+                f"admin:{opts.app_label}_{opts.model_name}_{action}",
+                args=(object_id,) if object_id else None,
+                current_app=self.admin_site.name,
+            )
+            return HttpResponseRedirect(url)
 
 
 @admin.register(SiteSettings)
-class SiteSettingsAdmin(admin.ModelAdmin):
+class SiteSettingsAdmin(CloudinaryUploadAdminMixin, admin.ModelAdmin):
     fieldsets = (
         ("Branding", {
             "fields": (
@@ -78,7 +103,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(CloudinaryUploadAdminMixin, admin.ModelAdmin):
     list_display = ("name", "parent", "is_active", "sort_order")
     list_editable = ("is_active", "sort_order")
     list_filter = ("is_active", "parent")
@@ -111,7 +136,7 @@ class ProductVariantInline(admin.TabularInline):
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(CloudinaryUploadAdminMixin, admin.ModelAdmin):
     list_display = (
         "name",
         "category",
@@ -392,7 +417,7 @@ class GuideAdmin(admin.ModelAdmin):
 
 
 @admin.register(BlogPost)
-class BlogPostAdmin(admin.ModelAdmin):
+class BlogPostAdmin(CloudinaryUploadAdminMixin, admin.ModelAdmin):
     list_display = ("title", "is_published", "published_at", "updated_at")
     list_filter = ("is_published",)
     search_fields = ("title", "summary", "body")

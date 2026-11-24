@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 from django.core.files.base import ContentFile
 from django.test import SimpleTestCase
 
-from .storage import CloudinaryMediaStorage
+from .storage import CloudinaryMediaStorage, CloudinaryUploadError
 
 
 class CloudinaryMediaStorageTests(SimpleTestCase):
@@ -24,6 +24,20 @@ class CloudinaryMediaStorageTests(SimpleTestCase):
         self.assertEqual(upload.call_args.kwargs["resource_type"], "image")
         self.assertFalse(upload.call_args.kwargs["overwrite"])
         self.assertFalse(upload.call_args.kwargs["unique_filename"])
+
+    def test_upload_errors_are_wrapped_without_provider_details(self):
+        upload = Mock(side_effect=RuntimeError("private provider response"))
+        uploader = SimpleNamespace(upload=upload)
+        cloudinary = ModuleType("cloudinary")
+        cloudinary.uploader = uploader
+
+        with patch.dict(sys.modules, {"cloudinary": cloudinary}):
+            with self.assertRaises(CloudinaryUploadError) as error:
+                CloudinaryMediaStorage().save(
+                    "products/aloe.webp", ContentFile(b"image bytes", name="aloe.webp")
+                )
+
+        self.assertNotIn("private provider response", str(error.exception))
 
     def test_url_uses_secure_cloudinary_image_url(self):
         cloudinary_url = Mock(return_value=("https://res.cloudinary.com/example/image/upload/products/aloe.jpg", {}))

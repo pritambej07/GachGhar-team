@@ -8,13 +8,15 @@ from django.core.files.storage import Storage
 from django.utils.deconstruct import deconstructible
 
 
+class CloudinaryUploadError(Exception):
+    """Raised when a persistent image upload cannot be completed."""
+
+
 @deconstructible
 class CloudinaryMediaStorage(Storage):
     """Store image fields in Cloudinary while keeping local names in the database."""
 
     def _save(self, name, content):
-        from cloudinary import uploader
-
         # Django's ImageField has already normalized and validated the name.
         # Keep its upload_to directory when forming the Cloudinary public ID.
         path = PurePosixPath(name)
@@ -22,13 +24,19 @@ class CloudinaryMediaStorage(Storage):
         public_id = f"{parent}{path.stem}-{self._new_file_suffix()}"
         if hasattr(content, "seek"):
             content.seek(0)
-        result = uploader.upload(
-            content,
-            public_id=public_id,
-            resource_type="image",
-            overwrite=False,
-            unique_filename=False,
-        )
+        try:
+            from cloudinary import uploader
+
+            result = uploader.upload(
+                content,
+                public_id=public_id,
+                resource_type="image",
+                overwrite=False,
+                unique_filename=False,
+            )
+        except Exception:
+            # Avoid exposing provider response details or credentials in admin.
+            raise CloudinaryUploadError("Persistent image upload failed.") from None
         extension = result.get("format") or path.suffix.lstrip(".")
         return f"{result['public_id']}.{extension}" if extension else result["public_id"]
 
