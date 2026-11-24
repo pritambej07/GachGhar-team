@@ -7,6 +7,25 @@ from accounts.utils import normalize_phone
 PAYMENT_LABELS = {"cod": "Cash on delivery", "razorpay": "Pay online (Razorpay)"}
 
 
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=120)
+    email = forms.EmailField()
+    phone = forms.CharField(max_length=15, required=False)
+    message = forms.CharField(max_length=3000, widget=forms.Textarea(attrs={"rows": 6}))
+
+    def clean_name(self):
+        return self.cleaned_data["name"].strip()
+
+    def clean_phone(self):
+        raw = self.cleaned_data.get("phone", "").strip()
+        if not raw:
+            return ""
+        return normalize_phone(raw) or ""
+
+    def clean_message(self):
+        return self.cleaned_data["message"].strip()
+
+
 class CheckoutForm(forms.Form):
     full_name = forms.CharField(max_length=120, label="Full name")
     email = forms.EmailField(required=False, label="Email (optional)")

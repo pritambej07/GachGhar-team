@@ -314,6 +314,40 @@ class Guide(models.Model):
         return reverse("store:guide", args=[self.slug])
 
 
+class BlogPost(models.Model):
+    title = models.CharField(max_length=160)
+    slug = models.SlugField(max_length=180, unique=True, blank=True)
+    summary = models.CharField(max_length=300, blank=True)
+    body = models.TextField()
+    featured_image = models.ImageField(
+        upload_to="blog/",
+        blank=True,
+        validators=IMAGE_VALIDATORS,
+    )
+    is_published = models.BooleanField(default=False)
+    published_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-published_at", "-created_at"]
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(BlogPost, self.title, self.pk)
+        if self.is_published and self.published_at is None:
+            self.published_at = timezone.now()
+        if not self.is_published:
+            self.published_at = None
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("store:blog_detail", args=[self.slug])
+
+
 class StaticPage(models.Model):
     """Editable informational pages: about, contact, privacy, terms, shipping, returns."""
 

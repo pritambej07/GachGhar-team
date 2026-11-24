@@ -43,7 +43,8 @@
           </div>
         </li>
         <li class="site-nav__item"><a class="site-nav__link" href="{% url 'store:page' slug='about' %}">About</a></li>
-        <li class="site-nav__item"><a class="site-nav__link" href="{% url 'store:guides' %}">Blogs</a></li>
+        <li class="site-nav__item"><a class="site-nav__link" href="{% url 'store:blog' %}">Blog</a></li>
+        <li class="site-nav__item"><a class="site-nav__link" href="{% url 'store:guides' %}">Plant Care</a></li>
         <li class="site-nav__item"><a class="site-nav__link" href="{% url 'store:page' slug='contact' %}">Contact</a></li>
       </ul>
     </nav>
@@ -116,7 +117,8 @@
       <li><a href="{% url 'store:home' %}">Home</a></li>
       <li><a href="{% url 'store:products' %}">Shop All</a></li>
       <li><a href="{% url 'store:page' slug='about' %}">About</a></li>
-      <li><a href="{% url 'store:guides' %}">Blogs &amp; Plant Care</a></li>
+      <li><a href="{% url 'store:blog' %}">Blog</a></li>
+      <li><a href="{% url 'store:guides' %}">Plant Care</a></li>
       <li><a href="{% url 'store:page' slug='contact' %}">Contact</a></li>
       <li>
         <details>

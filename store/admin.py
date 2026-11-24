@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from . import services
 from .models import (
     AssistantActionLog,
+    BlogPost,
     Cart,
     Category,
     Coupon,
@@ -387,6 +388,15 @@ class GuideAdmin(admin.ModelAdmin):
     )
     list_editable = ("is_published", "sort_order")
     exclude = ("slug",)
+
+
+@admin.register(BlogPost)
+class BlogPostAdmin(admin.ModelAdmin):
+    list_display = ("title", "is_published", "published_at", "updated_at")
+    list_filter = ("is_published",)
+    search_fields = ("title", "summary", "body")
+    list_editable = ("is_published",)
+    exclude = ("slug", "published_at")
 
 
 @admin.register(StaticPage)
