@@ -6,6 +6,18 @@ from .models import Cart, CartItem, Category, Product, ProductImage, ProductVari
 
 
 class ProductImageFallbackTests(TestCase):
+    def test_homepage_renders_branded_image_when_product_has_no_photo(self):
+        category = Category.objects.create(name="Indoor", slug="indoor")
+        product = Product.objects.create(name="Aloe Vera", slug="aloe-vera", category=category)
+        ProductVariant.objects.create(product=product, name="Standard", sku="ALOE-1", price=Decimal("99.00"))
+
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "product-placeholder.svg")
+        self.assertContains(response, "product-card__fallback")
+        self.assertContains(response, product.name)
+
     def test_product_detail_has_a_fallback_for_a_broken_image_url(self):
         category = Category.objects.create(name="Indoor", slug="indoor")
         product = Product.objects.create(name="Aloe Vera", slug="aloe-vera", category=category)
@@ -17,6 +29,7 @@ class ProductImageFallbackTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "data-image-fallback")
         self.assertContains(response, "data-image-fallback-placeholder")
+        self.assertContains(response, "product-placeholder.svg")
         self.assertContains(response, "missing-aloe.jpg")
 
     def test_cart_page_has_a_fallback_for_a_broken_image_url(self):
@@ -37,3 +50,4 @@ class ProductImageFallbackTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "data-image-fallback")
         self.assertContains(response, "data-image-fallback-placeholder")
+        self.assertContains(response, "product-placeholder.svg")

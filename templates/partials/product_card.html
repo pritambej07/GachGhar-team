@@ -1,12 +1,12 @@
-{% load store_tags %}
+{% load static store_tags %}
 <article class="product-card">
   <a class="product-card__media" href="{{ product.get_absolute_url }}" tabindex="-1" aria-hidden="true">
     {% with image=product.images.all|first %}
       {% if image %}
         <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }}" loading="lazy" width="480" height="480" data-image-fallback>
-        <span class="product-card__initial" data-image-fallback-placeholder hidden aria-hidden="true">{{ product.name|slice:":1" }}</span>
+        <img class="product-card__fallback" src="{% static 'assets/images/branding/product-placeholder.svg' %}" alt="" width="480" height="480" hidden data-image-fallback-placeholder>
       {% else %}
-        <span class="product-card__initial">{{ product.name|slice:":1" }}</span>
+        <img class="product-card__fallback" src="{% static 'assets/images/branding/product-placeholder.svg' %}" alt="" width="480" height="480" aria-hidden="true">
       {% endif %}
     {% endwith %}
   </a>

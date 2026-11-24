@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load store_tags %}
+{% load static store_tags %}
 {% block title %}{{ product.name }}{% endblock %}
 {% block meta_description %}{{ product.description|truncatechars:155 }}{% endblock %}
 {% block og_title %}{{ product.name }}{% endblock %}
@@ -20,9 +20,9 @@
       <div class="pdp__main">
         {% if images %}
           <img id="pdp-main" src="{{ images.0.image.url }}" alt="{{ images.0.alt_text|default:product.name }}" width="800" height="800" data-image-fallback>
-          <span class="product-card__initial product-card__initial--lg" data-image-fallback-placeholder hidden aria-hidden="true">{{ product.name|slice:":1" }}</span>
+          <img class="product-card__fallback product-card__fallback--detail" src="{% static 'assets/images/branding/product-placeholder.svg' %}" alt="" width="800" height="800" hidden data-image-fallback-placeholder>
         {% else %}
-          <span class="product-card__initial product-card__initial--lg" aria-hidden="true">{{ product.name|slice:":1" }}</span>
+          <img class="product-card__fallback product-card__fallback--detail" src="{% static 'assets/images/branding/product-placeholder.svg' %}" alt="" width="800" height="800" aria-hidden="true">
         {% endif %}
       </div>
       {% if images|length > 1 %}
