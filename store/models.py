@@ -71,8 +71,9 @@ class SiteSettings(models.Model):
 
     @classmethod
     def load(cls):
-        obj, _ = cls.objects.get_or_create(pk=1)
-        return obj
+        # Public requests must not create or mutate the singleton settings row.
+        # Admin can create it through the normal add form when an owner is ready.
+        return cls.objects.filter(pk=1).first() or cls(pk=1)
 
 
 class Category(models.Model):

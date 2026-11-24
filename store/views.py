@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
 from django.core.mail import send_mail
+from django.db import connection
 from django.db.models import Avg, Q
 from django.http import Http404, HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
@@ -320,11 +321,18 @@ def guide_detail(request, slug):
 
 
 def blog(request):
-    posts = BlogPost.objects.filter(is_published=True)
+    if BlogPost._meta.db_table in connection.introspection.table_names():
+        posts = BlogPost.objects.filter(is_published=True)
+    else:
+        # A code-first release may reach Production before its reviewed schema
+        # migration. Keep the public route healthy until BlogPost is available.
+        posts = []
     return render(request, "store/blog.html", {"posts": posts})
 
 
 def blog_detail(request, slug):
+    if BlogPost._meta.db_table not in connection.introspection.table_names():
+        raise Http404
     post = get_object_or_404(BlogPost, slug=slug, is_published=True)
     return render(request, "store/blog_detail.html", {"post": post})
 

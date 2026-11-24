@@ -1,6 +1,7 @@
 
 from django.contrib import admin, messages
 from django.core.exceptions import ValidationError
+from django.db import connection
 
 from . import services
 from .models import (
@@ -397,6 +398,11 @@ class BlogPostAdmin(admin.ModelAdmin):
     search_fields = ("title", "summary", "body")
     list_editable = ("is_published",)
     exclude = ("slug", "published_at")
+
+    def get_model_perms(self, request):
+        if self.model._meta.db_table not in connection.introspection.table_names():
+            return {}
+        return super().get_model_perms(request)
 
 
 @admin.register(StaticPage)

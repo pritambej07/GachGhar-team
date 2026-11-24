@@ -1,8 +1,21 @@
-from django.test import TestCase
+from unittest.mock import patch
+
+from django.contrib import admin
+from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
 
-from .models import BlogPost, Category, Guide, StaticPage
+from .admin import BlogPostAdmin
+from .models import BlogPost, Category, Guide, SiteSettings, StaticPage
 from .tests import make_product
+
+
+class BlogAdminSchemaGuardTests(SimpleTestCase):
+    @patch("store.admin.connection.introspection.table_names", return_value=[])
+    def test_blog_admin_is_hidden_until_its_table_exists(self, _table_names):
+        model_admin = BlogPostAdmin(BlogPost, admin.site)
+        request = RequestFactory().get("/admin/")
+
+        self.assertEqual(model_admin.get_model_perms(request), {})
 
 
 class PublicContentTests(TestCase):
@@ -11,6 +24,15 @@ class PublicContentTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No published blog posts yet")
+
+    @patch("store.views.connection.introspection.table_names", return_value=[])
+    def test_blog_routes_remain_safe_before_blog_migration(self, _table_names):
+        listing = self.client.get(reverse("store:blog"))
+        detail = self.client.get(reverse("store:blog_detail", args=["future-post"]))
+
+        self.assertEqual(listing.status_code, 200)
+        self.assertContains(listing, "No published blog posts yet")
+        self.assertEqual(detail.status_code, 404)
 
     def test_homepage_falls_back_to_active_categories_and_products(self):
         category = Category.objects.create(name="Indoor Plants", is_active=True)
@@ -79,6 +101,12 @@ class PublicContentTests(TestCase):
         self.assertEqual(contact.status_code, 200)
         self.assertContains(contact, "Send a message")
         self.assertEqual(self.client.get(reverse("store:page", args=["privacy"])).status_code, 404)
+
+    def test_public_homepage_does_not_create_site_settings(self):
+        response = self.client.get(reverse("store:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(SiteSettings.objects.exists())
 
     def test_short_about_and_contact_routes_render_and_are_used_in_navigation(self):
         about = self.client.get(reverse("store:about"))
