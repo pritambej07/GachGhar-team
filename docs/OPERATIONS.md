@@ -20,6 +20,18 @@ python manage.py import_guide_content
 
 The command is dry-run by default. After confirming the target is an isolated non-production database, `python manage.py import_guide_content --apply` creates missing slugs only. Identical records are skipped; conflicting existing records are reported and left unchanged. The fixture's publication status is preserved, so unpublished guides remain hidden.
 
+Do not run the apply command against Production until the exact database target is verified and a recoverable backup has been confirmed. The existing fixture contains 14 guides; preview it first and review any conflicts.
+
+### Import original Blog articles
+
+`store/fixtures/blog_content.json` contains three original, practical plant-care articles. Preview them with:
+
+```powershell
+python manage.py import_blog_content
+```
+
+The command is dry-run by default, creates only missing slugs with `--apply`, and leaves conflicting owner-written posts unchanged. It sets a publication date for newly created published posts. The Blog table must exist first, so apply migration `0007` only after verifying the exact Production target and a recoverable backup; then preview the content import before applying it.
+
 In Admin > Site settings, enter verified contact details, legal business name, grievance contact, and contact hours before public launch. These fields are optional in the database so unverified details are never invented. Have the Privacy, Terms, Shipping, and Returns copy reviewed against the actual business and applicable requirements before relying on it as a legal policy. The official [Consumer Protection (E-Commerce) Rules, 2020](https://consumeraffairs.nic.in/sites/default/files/E%20commerce%20rules.pdf) and [Digital Personal Data Protection Rules, 2025](https://www.meity.gov.in/documents/act-and-policies/digital-personal-data-protection-rules-2025-gDOxUjMtQWa) are useful primary references.
 
 ## Creating staff roles
