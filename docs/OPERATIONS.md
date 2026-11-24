@@ -10,6 +10,16 @@ python manage.py seed_gachghar_content
 
 The command rolls back its preview by default. Use `--apply` only after reviewing the target database. It creates missing About, Contact, Privacy, Terms, Shipping, Returns, and care-guide records as published; it preserves existing page and guide copy, appends the About copy only once, and reports unpublished slug conflicts without publishing them. It also adds a care-guide home section when none exists.
 
+### Import existing local care guides
+
+`store/fixtures/guide_content.json` contains only the 14 Guide records exported from the local SQLite database. It excludes products, customers, orders, stock, and images. Preview the import with:
+
+```powershell
+python manage.py import_guide_content
+```
+
+The command is dry-run by default. After confirming the target is an isolated non-production database, `python manage.py import_guide_content --apply` creates missing slugs only. Identical records are skipped; conflicting existing records are reported and left unchanged. The fixture's publication status is preserved, so unpublished guides remain hidden.
+
 In Admin > Site settings, enter verified contact details, legal business name, grievance contact, and contact hours before public launch. These fields are optional in the database so unverified details are never invented. Have the Privacy, Terms, Shipping, and Returns copy reviewed against the actual business and applicable requirements before relying on it as a legal policy. The official [Consumer Protection (E-Commerce) Rules, 2020](https://consumeraffairs.nic.in/sites/default/files/E%20commerce%20rules.pdf) and [Digital Personal Data Protection Rules, 2025](https://www.meity.gov.in/documents/act-and-policies/digital-personal-data-protection-rules-2025-gDOxUjMtQWa) are useful primary references.
 
 ## Creating staff roles

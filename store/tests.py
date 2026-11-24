@@ -139,6 +139,17 @@ class CartTests(TestCase):
         self.assertEqual(data["count"], 2)
         self.assertEqual(data["subtotal"], "₹998")
 
+    def test_header_badge_matches_cart_page_and_api(self):
+        self.client.post(reverse("store:cart_add"), {"variant_id": self.variant.pk, "quantity": 2}, **JSON)
+
+        home = self.client.get(reverse("store:home"))
+        cart = self.client.get(reverse("store:cart"))
+        api = self.client.get(reverse("store:cart_api")).json()
+
+        self.assertEqual(home.context["cart_count"], 2)
+        self.assertEqual(cart.context["summary"]["count"], 2)
+        self.assertEqual(api["count"], 2)
+
     def test_quantity_zero_removes_line(self):
         self.client.post(reverse("store:cart_add"), {"variant_id": self.variant.pk, "quantity": 1}, **JSON)
         item = self.client.get(reverse("store:cart_api")).json()["lines"][0]
@@ -243,6 +254,32 @@ class AccessControlTests(TestCase):
                                      shipping_fee=Decimal("0"), total=Decimal("10"), shipping_address={})
         self.client.force_login(other)
         self.assertEqual(self.client.get(reverse("accounts:order_detail", args=[order.number])).status_code, 404)
+
+
+class WishlistViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="wishlist-owner",
+            email="wishlist-owner@example.com",
+            password="Safe-pass-123",
+        )
+        self.client.force_login(self.user)
+        self.product, _ = make_product("Wishlist Plant")
+
+    def test_add_view_and_remove_wishlist_item(self):
+        toggle_url = reverse("store:wishlist_toggle", args=[self.product.pk])
+        added = self.client.post(toggle_url, **JSON).json()
+        listing = self.client.get(reverse("store:wishlist"))
+
+        self.assertTrue(added["in_wishlist"])
+        self.assertContains(listing, self.product.name)
+        self.assertEqual(self.product.wishlisted_by.count(), 1)
+
+        removed = self.client.post(toggle_url, **JSON).json()
+
+        self.assertFalse(removed["in_wishlist"])
+        self.assertNotContains(self.client.get(reverse("store:wishlist")), self.product.name)
+        self.assertEqual(self.product.wishlisted_by.count(), 0)
 
     def test_customer_cannot_edit_another_customers_address(self):
         owner = User.objects.create_user(username="owner2", email="owner2@example.com", password="Str0ng-pass-123")
