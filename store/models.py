@@ -297,6 +297,11 @@ class Guide(models.Model):
     slug = models.SlugField(max_length=180, unique=True, blank=True)
     summary = models.CharField(max_length=300, blank=True)
     body = models.TextField(help_text="Plain text. Blank lines start new paragraphs.")
+    featured_image = models.ImageField(
+        upload_to="guides/",
+        blank=True,
+        validators=IMAGE_VALIDATORS,
+    )
     is_published = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField(default=0)
 

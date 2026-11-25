@@ -217,6 +217,8 @@ label.check input { width: auto; min-height: auto; }
 .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
 .guide-card { display: block; padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--sage); background: var(--white); text-decoration: none; color: var(--charcoal); }
 .guide-card h2, .guide-card h3 { font-size: 22px; }
+.guide-card-image { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 16px; }
+.guide-featured-image { display: block; width: 100%; height: auto; max-height: 560px; object-fit: cover; border-radius: var(--radius-lg); margin: 0 auto 28px; }
 .review-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 .review-card { margin: 0; padding: 20px; background: var(--white); border-left: 4px solid var(--leaf); border-radius: var(--radius); }
 .review-card__rating { font-weight: 600; color: var(--text-green); }

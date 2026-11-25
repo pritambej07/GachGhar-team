@@ -406,7 +406,7 @@ class ReviewAdmin(admin.ModelAdmin):
 
 
 @admin.register(Guide)
-class GuideAdmin(admin.ModelAdmin):
+class GuideAdmin(CloudinaryUploadAdminMixin, admin.ModelAdmin):
     list_display = (
         "title",
         "is_published",

@@ -5,6 +5,9 @@
 <div class="container narrow prose">
   <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="{% url 'store:guides' %}">Plant care guides</a></li><li aria-current="page">{{ guide.title }}</li></ol></nav>
   <h1 class="page-title">{{ guide.title }}</h1>
+  {% if guide.featured_image %}
+    <img class="guide-featured-image" src="{{ guide.featured_image.url }}" alt="{{ guide.title }}" loading="eager" width="960" height="630">
+  {% endif %}
   <div>{{ guide.body|linebreaks }}</div>
 </div>
 {% endblock %}

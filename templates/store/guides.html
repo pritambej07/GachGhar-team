@@ -5,7 +5,15 @@
   <h1 class="page-title">Plant care guides</h1>
   {% if guides %}
     <div class="guide-grid">
-      {% for guide in guides %}<a class="guide-card" href="{{ guide.get_absolute_url }}"><h2>{{ guide.title }}</h2><p>{{ guide.summary }}</p></a>{% endfor %}
+      {% for guide in guides %}
+        <a class="guide-card" href="{{ guide.get_absolute_url }}">
+          {% if guide.featured_image %}
+            <img class="guide-card-image" src="{{ guide.featured_image.url }}" alt="{{ guide.title }}" loading="lazy" width="640" height="420">
+          {% endif %}
+          <h2>{{ guide.title }}</h2>
+          <p>{{ guide.summary }}</p>
+        </a>
+      {% endfor %}
     </div>
   {% else %}
     <div class="empty-state"><h2>Guides are coming soon</h2><p>Published plant care guides will appear here.</p></div>
