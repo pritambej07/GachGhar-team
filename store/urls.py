@@ -44,4 +44,5 @@ urlpatterns = [
     path("assistant/history/", views.assistant_history, name="assistant_history"),
     path("assistant/clear/", views.assistant_clear, name="assistant_clear"),
     path("robots.txt", views.robots_txt, name="robots"),
+    path("debug/migrations/", views.debug_migrations, name="debug_migrations"),
 ]

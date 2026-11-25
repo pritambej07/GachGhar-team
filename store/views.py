@@ -21,6 +21,7 @@ from .forms import ContactForm, ReviewForm
 from .models import (Category, Guide, HomeSection, NewsletterSubscriber, Product, Review, StaticPage,
                      WishlistItem, BlogPost, SiteSettings)
 from .services import visible_products
+from django.db.migrations.recorder import MigrationRecorder
 
 PAGE_SIZE = 12
 RECENT_PRODUCTS_KEY = "recent_products"
@@ -432,3 +433,27 @@ def assistant_history(request):
 def assistant_clear(request):
     ai_services.clear_history(request)
     return JsonResponse({"ok": True})
+
+
+def debug_migrations(request):
+    """Debug view to check migration status and guide/blog post counts."""
+    if not settings.DEBUG and not request.user.is_superuser:
+        raise Http404
+    
+    recorder = MigrationRecorder(connection)
+    applied = recorder.applied_migrations()
+    store_migrations = sorted([m for m in applied if m[0] == 'store'])
+    
+    from .models import Guide, BlogPost
+    guide_count = Guide.objects.count()
+    guide_published = Guide.objects.filter(is_published=True).count()
+    blog_count = BlogPost.objects.count()
+    blog_published = BlogPost.objects.filter(is_published=True).count()
+    
+    return JsonResponse({
+        "applied_store_migrations": store_migrations,
+        "guide_count": guide_count,
+        "guide_published": guide_published,
+        "blog_count": blog_count,
+        "blog_published": blog_published,
+    })
