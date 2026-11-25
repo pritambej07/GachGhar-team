@@ -1,7 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "python manage.py collectstatic --noinput",
+  "outputDirectory": "staticfiles",
   "rewrites": [
+    {
+      "source": "/static/(.*)",
+      "destination": "/static/$1"
+    },
+    {
+      "source": "/media/(.*)",
+      "destination": "/media/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/api/index.py"
