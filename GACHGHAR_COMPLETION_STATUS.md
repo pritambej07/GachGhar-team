@@ -67,16 +67,15 @@
 ---
 
 ## Next Actions (Priority Order)
-1. **APPLY MIGRATIONS TO PRODUCTION DATABASE** (CRITICAL - Vercel build may not have DB access)
-   - Option A: Run locally with production DATABASE_URL:
+1. **APPLY MIGRATIONS TO PRODUCTION DATABASE** (CRITICAL - Vercel build cannot access Neon DB; Vercel CLI cannot pull production secrets)
+   - **User Action Required**: Get `DATABASE_URL` from Vercel Dashboard → Project → Settings → Environment Variables → Production
+   - **Then run locally**:
+     ```bash
+     cd D:\GachGhar_website_project\GachGhar
+     $env:DATABASE_URL="postgresql://<user>:<pass>@<host>/<db>?sslmode=require"
+     python manage.py migrate --noinput
      ```
-     DATABASE_URL="<neon-production-url>" python manage.py migrate --noinput
-     ```
-   - Option B: Use Vercel CLI (if configured):
-     ```
-     vercel run python manage.py migrate --noinput
-     ```
-   - Option C: Ask Vercel support / check Vercel project settings for build-time DB access
+   - **OR provide DATABASE_URL to agent** for secure execution
 2. **Verify live website after migrations applied**
    - Need to verify: Guides page shows 14 published guides (not "Guides are coming soon")
    - Need to verify: Blog page shows 3 published posts (not "No published blog posts yet")
@@ -84,7 +83,7 @@
    - Need to verify: Product images display correctly (test admin upload)
    - Need to verify: Cart and checkout flow works (COD and Razorpay TEST MODE)
 3. **Test locally** all functionality - DONE (all critical tests pass)
-4. **Deploy to Vercel** - DONE (pushed commit 84637c2 to trigger deployment)
+4. **Deploy to Vercel** - DONE (pushed commit c122faa)
 
 ## Local Data Summary (Ready for Production)
 - **Guides**: 14 published (all is_published=True) - loaded by migration 0009
@@ -114,14 +113,17 @@
 
 **NOTE**: These migrations are in the codebase and tracked in git, but Vercel build may not have database access. They MUST be applied manually to the production Neon database.
 
-## Live Verification (Current - After Deployment Triggered)
+## Live Verification (Current - Production Migrations Pending)
 - ❌ `/guides/` - Returns 200 but shows "Guides are coming soon" (migration 0009 not applied to production DB)
 - ❌ `/blog/` - Returns 200 but shows "No published blog posts yet" (migration 0009 not applied to production DB)
 - ❌ `/checkout/` - COD not visible (migration 0011 not applied to production DB, or cart empty)
 - ✅ `/` - Home page works (200)
-- ✅ `/products/` - Products page works (200)
+- ✅ `/products/` - Products page works (200) - 6 products visible
 - ✅ `/product/snake-plant/` - Product detail works (200)
 - ✅ `/admin/` - Admin login page accessible (200)
+- ⚠️ `/debug/migrations/` - 404 (requires superuser in production)
+
+**Vercel CLI Status**: Project linked (`gach-ghar/gach-ghar-team`), 11 production secrets blocked from pull including `DATABASE_URL`
 
 ## Local Verification Complete
 - ✅ Guides: 14 published guides exist and will be loaded by migration 0009
@@ -135,7 +137,7 @@
 ---
 
 ## Blockers / Questions
-1. **CRITICAL: Vercel build environment may not have access to Neon PostgreSQL database** - migrations 0009, 0010, 0011 not applied to production. Need to run migrations manually against production DB.
+1. **CRITICAL: Vercel CLI cannot pull production secrets** - `vercel env pull` returns `[SENSITIVE]` placeholders for 11 secrets including `DATABASE_URL`. This is a Vercel security feature. Production DATABASE_URL must be obtained from Vercel Dashboard manually.
 2. Need to confirm if Neon production database has the guide/blog data after manual migration
 3. Need to check if Cloudinary credentials are configured in Vercel (for admin image uploads)
 4. Need to verify Razorpay test mode credentials in Vercel (rzp_test_ keys)
