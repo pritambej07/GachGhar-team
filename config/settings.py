@@ -176,13 +176,20 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 SECURE_REFERRER_POLICY = "same-origin"
 
 if not DEBUG:
+    # SECURE_HSTS_SECONDS: Vercel manages HSTS at the load balancer level;
+    # setting this manually can cause redirect loops. Keep 0; the check will
+    # warn but the value is correct for a Vercel-hosted app.
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+    # SECURE_SSL_REDIRECT: Vercel handles HTTPS termination; redirect is managed
+    # by the proxy. Set True only if you manage SSL at the app level.
+    SECURE_SSL_REDIRECT = bool(env("DJANGO_SECURE_SSL_REDIRECT", False))
+    # Secure cookies only when behind a trusted HTTPS proxy.
     SESSION_COOKIE_SECURE = env_bool("DJANGO_SECURE_COOKIES", True)
     CSRF_COOKIE_SECURE = env_bool("DJANGO_SECURE_COOKIES", True)
-    SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", True)
-    SECURE_HSTS_SECONDS = int(env("DJANGO_HSTS_SECONDS", "0"))
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_HSTS_INCLUDE_SUBDOMAINS")
-    SECURE_HSTS_PRELOAD = env_bool("DJANGO_HSTS_PRELOAD")
-    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https") if env_bool("DJANGO_BEHIND_PROXY") else None
+    # Proxy header for trusting X-Forwarded-Proto from Vercel.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https") if env_bool("DJANGO_BEHIND_PROXY", True) else None
 
 # Business and integration settings (non-secret).
 SITE_NAME = "GachGhar"

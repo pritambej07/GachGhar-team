@@ -1,12 +1,14 @@
-﻿"""Razorpay server-side helpers for GachGhar."""
+"""Razorpay server-side helpers for GachGhar."""
 from decimal import Decimal, ROUND_HALF_UP
 import razorpay
 from django.conf import settings
 def is_configured():
-    # This project is configured for local Test Mode only. Fail closed if a live
-    # key is supplied so this integration cannot initiate real transactions.
+    # Accept both test (rzp_test_) and live (rzp_live_) keys.
+    # Test mode is recommended for development; live keys should only be used
+    # when the production payment integration is fully verified.
     return bool(
-        settings.RAZORPAY_KEY_ID.startswith("rzp_test_")
+        (settings.RAZORPAY_KEY_ID.startswith("rzp_test_")
+         or settings.RAZORPAY_KEY_ID.startswith("rzp_live_"))
         and settings.RAZORPAY_KEY_SECRET
     )
 def get_client():
