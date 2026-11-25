@@ -97,7 +97,7 @@
 - **SiteSettings**: cod_enabled=True (set by migration 0011), shipping_fee=0, free_shipping_threshold=None
 - **Superusers**: 1
 - **Migrations**: 0001-0011 all applied locally
-- **Cloudinary**: Configured for media storage (tested)
+- **Cloudinary**: Configured for media storage - **CLOUDINARY_CLOUD_NAME = qrinm3mf** (corrected from incorrect 'gachghar')
 - **Razorpay**: TEST MODE keys configured (rzp_test_ prefix)
 
 ## Deployment Status
@@ -122,12 +122,13 @@
 - ✅ `/` - Home page works (200)
 - ✅ Razorpay TEST MODE configured (rzp_test_U21Bzf3xV9s...)
 - ✅ COD enabled in SiteSettings (cod_enabled=True)
+- ✅ **Cloudinary image uploads work** - CLOUDINARY_CLOUD_NAME corrected to `qrinm3mf`
 - ✅ All 104 critical tests pass
 - ⚠️ `/debug/migrations/` - 404 (requires superuser in production)
 
 **Production Database**: ✅ Migrations 0009, 0010, 0011 applied - 14 guides, 3 blog posts, COD enabled
-**Code Deployment**: ✅ Commit caef0dc deployed (deployment aod7n2f5a)
-**Alias**: ✅ `gach-ghar-team-jade.vercel.app` → `gach-ghar-team-aod7n2f5a-gach-ghar.vercel.app`
+**Code Deployment**: ✅ Commit caef0dc deployed (deployment h5hnvt3u6)
+**Alias**: ✅ `gach-ghar-team-jade.vercel.app` → `gach-ghar-team-h5hnvt3u6-gach-ghar.vercel.app`
 
 ## Local Verification Complete
 - ✅ Guides: 14 published guides exist and loaded by migration 0009
@@ -146,8 +147,9 @@
 3. ✅ **RESOLVED**: Code fix for serverless table_names() cache deployed (commit caef0dc)
 4. ✅ **RESOLVED**: Fixture data manually loaded (migration 0009 was marked applied but data missing)
 5. ✅ **RESOLVED**: Razorpay test mode credentials verified (rzp_test_U21Bzf3xV9s...)
-6. ✅ **RESOLVED**: Cloudinary configured (tested via admin tests)
+6. ✅ **RESOLVED**: Cloudinary configured - CLOUDINARY_CLOUD_NAME corrected to `qrinm3mf` (was incorrectly `gachghar`)
 7. ✅ **RESOLVED**: Complete checkout flow - COD + Razorpay TEST MODE ready
+8. ✅ **RESOLVED**: Admin product image uploads work - Cloudinary integration verified
 
 ---
 
