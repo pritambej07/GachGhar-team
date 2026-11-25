@@ -312,10 +312,18 @@ def page(request, slug):
 
 
 def guides(request):
-    return render(request, "store/guides.html", {"guides": Guide.objects.filter(is_published=True)})
+    if Guide._meta.db_table in connection.introspection.table_names():
+        guides_qs = Guide.objects.filter(is_published=True)
+    else:
+        # A code-first release may reach Production before its reviewed schema
+        # migration. Keep the public route healthy until Guide is available.
+        guides_qs = Guide.objects.none()
+    return render(request, "store/guides.html", {"guides": guides_qs})
 
 
 def guide_detail(request, slug):
+    if Guide._meta.db_table not in connection.introspection.table_names():
+        raise Http404
     guide = get_object_or_404(Guide, slug=slug, is_published=True)
     return render(request, "store/guide_detail.html", {"guide": guide})
 
