@@ -313,36 +313,37 @@ def page(request, slug):
 
 
 def guides(request):
-    if Guide._meta.db_table in connection.introspection.table_names():
+    try:
         guides_qs = Guide.objects.filter(is_published=True)
-    else:
-        # A code-first release may reach Production before its reviewed schema
-        # migration. Keep the public route healthy until Guide is available.
+        # Force evaluation to trigger any potential table missing error
+        list(guides_qs[:1])
+    except Exception:
+        # Table doesn't exist yet (migration not applied)
         guides_qs = Guide.objects.none()
     return render(request, "store/guides.html", {"guides": guides_qs})
 
 
 def guide_detail(request, slug):
-    if Guide._meta.db_table not in connection.introspection.table_names():
+    try:
+        guide = get_object_or_404(Guide, slug=slug, is_published=True)
+    except Exception:
         raise Http404
-    guide = get_object_or_404(Guide, slug=slug, is_published=True)
     return render(request, "store/guide_detail.html", {"guide": guide})
 
 
 def blog(request):
-    if BlogPost._meta.db_table in connection.introspection.table_names():
-        posts = BlogPost.objects.filter(is_published=True)
-    else:
-        # A code-first release may reach Production before its reviewed schema
-        # migration. Keep the public route healthy until BlogPost is available.
+    try:
+        posts = list(BlogPost.objects.filter(is_published=True))
+    except Exception:
         posts = []
     return render(request, "store/blog.html", {"posts": posts})
 
 
 def blog_detail(request, slug):
-    if BlogPost._meta.db_table not in connection.introspection.table_names():
+    try:
+        post = get_object_or_404(BlogPost, slug=slug, is_published=True)
+    except Exception:
         raise Http404
-    post = get_object_or_404(BlogPost, slug=slug, is_published=True)
     return render(request, "store/blog_detail.html", {"post": post})
 
 
