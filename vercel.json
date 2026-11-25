@@ -6,6 +6,14 @@
     {
       "source": "/static/(.*)",
       "destination": "/static/$1"
+    },
+    {
+      "source": "/media/(.*)",
+      "destination": "/media/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.py"
     }
   ]
 }
