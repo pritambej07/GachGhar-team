@@ -1,35 +1,23 @@
 # Product catalogue import
 
-The owner-supplied 26-product list is encoded in the `import_catalogue` Django management command. It uses the existing `Product`, `ProductVariant`, `Category`, and stock-ledger models.
+`import_catalogue` is scoped to the 15 products in the current production plan and the five existing categories: Indoor Plants, Seeds, Fertilizers & Soil, Pots & Planters, and Gardening Tools. It recognizes known category and product aliases so an existing record is not duplicated. It refuses to apply if one of the required categories is missing or ambiguous.
 
-The separate five-category, 26-product catalogue in `seed_gachghar_catalogue.py` can be applied idempotently with:
+The command is a read-only preview by default:
 
 ```powershell
-python manage.py seed_gachghar_catalogue
+python manage.py import_catalogue
 ```
 
-By default this is a transactional preview that rolls back all changes. Add `--apply` only after reviewing the target database and preview. Applying activates matching catalogue categories, products, and variants and creates any missing records. It preserves existing names, descriptions, category assignments, prices, SKUs, and stock; records whose product category or SKU ownership conflicts are reported and skipped for review. It never creates stock movements or images. New variants therefore begin with the model's zero-stock default and remain unavailable for purchase until actual inventory is entered through a stock movement. Production data should only be seeded after confirming the configured PostgreSQL database and reviewing the resulting catalogue.
+Review the complete match report against the verified Production database. The preview shows existing matches and conflicts without writing. It must not be run against Preview or a local database as a substitute for checking Production.
 
-The current database match, price, stock, SKU, and image review is in [PRODUCT_CATALOGUE_REVIEW.csv](./PRODUCT_CATALOGUE_REVIEW.csv).
-The source-image scan found one existing product photo (`media/products/images.jpg`) already attached to the plastic nursery pot, plus only branding and a generic greenhouse reference image. No image was suitable and rights-verified for the remaining products, so no image files were added or reassigned.
+Applying requires a separately verified recovery point and the explicit acknowledgement flag:
 
-## Safe workflow
+```powershell
+python manage.py import_catalogue --apply --backup-verified
+```
 
-1. Review product names, prices, categories, and specification text in the command.
-2. Make a separate copy of the current database and verify the copy before any import.
-3. Run a read-only preview:
+The command preserves matching products and every existing category. It creates only unmatched product records as inactive stubs with the planned price, a generated planning SKU, and the model's zero-stock default. It does not add categories, change existing product names, descriptions, categories, prices, SKUs, stock, or images, and it does not create stock movements. New stubs stay off the storefront until an owner verifies real stock and a suitable image, then activates them in Admin. Never apply until the Production target, category matches, and recovery point have been verified.
 
-   ```powershell
-   py manage.py import_catalogue
-   ```
+The separate `seed_gachghar_catalogue` command is for the broader 26-product local catalogue; it is not the command for this 15-product Production plan.
 
-4. Resolve every ambiguous match and provide an owner-approved SKU, actual stock quantity, and an image with confirmed usage rights for each product that needs them.
-5. Only after approving the preview and verifying a fresh database backup, explicitly apply:
-
-   ```powershell
-   py manage.py import_catalogue --apply --backup-verified
-   ```
-
-The command is dry-run by default. Applying it reuses matching categories and products, updates only unambiguous product details and explicitly supplied prices, and creates unmatched products as inactive stubs. It does not create variants without owner-provided SKUs, change stock, assign images, or alter existing comparison prices. Different pack sizes, ambiguous products, and slug conflicts are skipped for owner review. Re-running the command does not create duplicate categories or products.
-
-New stubs are not visible in the storefront until an administrator adds a real variant/SKU and stock through the existing inventory workflow, supplies an image if available, and activates the product.
+The project currently has no complete supplied image set for these 15 planned products. A prior repository scan found one existing product photo attached to the plastic nursery pot, plus branding and a generic greenhouse image. Do not reuse unrelated imagery or invent product photos. Confirm image ownership and suitability before adding assets.

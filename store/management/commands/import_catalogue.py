@@ -10,7 +10,11 @@ from store.models import Category, Product, ProductVariant
 
 
 CATEGORIES = (
-    {"name": "Live Plants", "slug": "live-plants", "aliases": ()},
+    {
+        "name": "Indoor Plants",
+        "slug": "indoor-plants",
+        "aliases": ("Live Plants", "Indoor & Foliage Plants"),
+    },
     {"name": "Seeds", "slug": "seeds", "aliases": ()},
     {
         "name": "Fertilizers & Soil",
@@ -19,7 +23,6 @@ CATEGORIES = (
     },
     {"name": "Pots & Planters", "slug": "pots-planters", "aliases": ()},
     {"name": "Gardening Tools", "slug": "gardening-tools", "aliases": ()},
-    {"name": "Plant Accessories", "slug": "plant-accessories", "aliases": ()},
 )
 
 
@@ -202,6 +205,46 @@ CATALOGUE = (
     ),
 )
 
+# This release plan is intentionally limited to the 15 products the owner
+# specified. The broader local catalogue remains available in its own seeder;
+# this Production-oriented importer must not add unrelated products/categories.
+_REQUESTED_PRODUCT_CATEGORIES = {
+    "Money Plant (Golden Pothos)": "Indoor Plants",
+    "Snake Plant": "Indoor Plants",
+    "Aloe Vera": "Indoor Plants",
+    "Coriander Seeds": "Seeds",
+    "Tomato Seeds": "Seeds",
+    "Sunflower Seeds": "Seeds",
+    "Neem Cake Powder": "Fertilizers & Soil",
+    "Cocopeat Block": "Fertilizers & Soil",
+    "Organic Vermicompost": "Fertilizers & Soil",
+    "Plastic Nursery Pot": "Pots & Planters",
+    "Terracotta Clay Pot": "Pots & Planters",
+    "Ceramic Decorative Pot": "Pots & Planters",
+    "Gardening Gloves": "Gardening Tools",
+    "Garden Hand Trowel": "Gardening Tools",
+    "Pruning Shears": "Gardening Tools",
+}
+
+_requested_catalogue = []
+for _entry in CATALOGUE:
+    _category = _REQUESTED_PRODUCT_CATEGORIES.get(_entry["name"])
+    if _category is None:
+        continue
+    _copy = {**_entry, "category": _category, "matching": dict(_entry["matching"])}
+    if _entry["name"] == "Money Plant (Golden Pothos)":
+        _copy["name"] = "Money Plant"
+        _copy["matching"]["aliases"] = tuple(dict.fromkeys((
+            *_copy["matching"].get("aliases", ()),
+            "Money Plant (Golden Pothos)",
+        )))
+    _requested_catalogue.append(_copy)
+
+if len(_requested_catalogue) != len(_REQUESTED_PRODUCT_CATEGORIES):
+    raise RuntimeError("The requested product plan does not match its prepared catalogue entries.")
+
+CATALOGUE = tuple(_requested_catalogue)
+
 
 def _normalize(value):
     return " ".join(re.sub(r"[^\w]+", " ", value.casefold()).split())
@@ -210,6 +253,10 @@ def _normalize(value):
 def _find_named(objects, names):
     keys = {_normalize(name) for name in names}
     return [obj for obj in objects if _normalize(obj.name) in keys]
+
+
+def _planned_sku(entry):
+    return f"GG-PLAN-{slugify(entry['name']).replace('-', '').upper()}"
 
 
 def _category_plan(categories):
@@ -294,15 +341,23 @@ def build_import_plan():
                 "candidates": [slug_match], "note": "Generated slug belongs to a different existing product.",
             })
         else:
+            sku_match = ProductVariant.objects.filter(sku=_planned_sku(entry)).select_related("product").first()
+            if sku_match:
+                plans.append({
+                    "entry": entry, "status": "sku_conflict", "product": sku_match.product, "variant": sku_match,
+                    "candidates": [sku_match.product], "note": "Generated planning SKU is already assigned to another product.",
+                })
+                continue
             plans.append({
                 "entry": entry, "status": "create", "product": None, "variant": None,
-                "candidates": [], "note": "Will be created inactive without a variant until SKU and stock are supplied.",
+                "candidates": [],
+                "note": "Will be inactive with the planned price and zero-stock default; add an image and verified stock before publication.",
             })
     return category_plans, plans
 
 
 class Command(BaseCommand):
-    help = "Safely stage the owner-supplied 26-product catalogue; defaults to a read-only dry run."
+    help = "Safely stage the 15 requested products; defaults to a read-only dry run."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -334,7 +389,7 @@ class Command(BaseCommand):
             "Products: "
             + ", ".join(f"{name}={counts.get(name, 0)}" for name in (
                 "matched", "matched_no_variant", "create", "variant_pending", "ambiguous",
-                "variant_conflict", "slug_conflict",
+                "variant_conflict", "slug_conflict", "sku_conflict",
             ))
         )
         for item in plans:
@@ -355,21 +410,30 @@ class Command(BaseCommand):
                 details.append(item["note"])
             self.stdout.write(f"  {item['status'].upper():18} {entry['name']}: " + "; ".join(details))
 
-        created_categories = sum(item["status"] == "create" for item in category_plans)
         self.stdout.write(
             "Images added: 0. Existing images will not be reassigned; image rights were not verified."
         )
         self.stdout.write(
-            "Stock, SKU, compare-at prices, and existing image assignments are preserved; no stock is invented."
+            "Existing products, categories, stock, SKUs, prices, and images are preserved. New products are inactive "
+            "with a zero-stock price variant and generated planning SKU; no images or stock are added."
         )
 
         if not options["apply"]:
             self.stdout.write(self.style.WARNING("DRY RUN ONLY: no database writes were made."))
             return
 
+        missing_categories = [
+            item["definition"]["name"] for item in category_plans if item["status"] != "reuse"
+        ]
+        if missing_categories:
+            raise CommandError(
+                "Required existing categories are missing or ambiguous; no categories or products were written: "
+                + ", ".join(missing_categories)
+            )
+
         self._apply(category_plans, plans)
         self.stdout.write(self.style.SUCCESS(
-            f"Import applied. Categories created: {created_categories}; product plans processed idempotently."
+            "Import applied idempotently; existing categories and matching products were preserved."
         ))
 
     @transaction.atomic
@@ -377,30 +441,21 @@ class Command(BaseCommand):
         category_map = {}
         for item in category_plans:
             definition = item["definition"]
-            if item["status"] == "conflict":
-                raise CommandError(f"Category conflict: {definition['name']}")
-            category = item["category"]
-            if item["status"] == "create":
-                if Category.objects.filter(slug=definition["slug"]).exists():
-                    raise CommandError(f"Category slug conflict: {definition['slug']}")
-                category = Category.objects.create(
-                    name=definition["name"],
-                    slug=definition["slug"],
-                    is_active=True,
-                    sort_order=(CATEGORIES.index(definition) + 1) * 10,
-                )
-            category_map[definition["name"]] = category
+            category_map[definition["name"]] = item["category"]
 
-        created = updated = staged = skipped = 0
+        created = preserved = skipped = 0
         for item in plans:
             entry = item["entry"]
-            if item["status"] in {"ambiguous", "variant_pending", "variant_conflict", "slug_conflict"}:
-                skipped += 1
+            if item["status"] != "create":
+                if item["status"] in {"matched", "matched_no_variant"}:
+                    preserved += 1
+                else:
+                    skipped += 1
                 continue
 
             category = category_map[entry["category"]]
             if item["status"] == "create":
-                Product.objects.create(
+                product = Product.objects.create(
                     name=entry["name"],
                     slug=slugify(entry["name"]),
                     category=category,
@@ -408,28 +463,15 @@ class Command(BaseCommand):
                     specifications="\n".join(entry["specifications"]),
                     is_active=False,
                 )
+                ProductVariant.objects.create(
+                    product=product,
+                    name=entry["variant"],
+                    sku=_planned_sku(entry),
+                    price=entry["price"],
+                )
                 created += 1
-                staged += 1
-                continue
-
-            product = item["product"]
-            product.name = entry["name"]
-            product.category = category
-            product.description = entry["description"]
-            product.specifications = "\n".join(entry["specifications"])
-            product.save()
-            updated += 1
-
-            variant = item["variant"]
-            if variant:
-                variant.name = entry["variant"]
-                variant.price = entry["price"]
-                variant.full_clean()
-                variant.save(update_fields=("name", "price"))
-            else:
-                staged += 1
 
         self.stdout.write(
-            f"Created inactive product stubs: {created}; matched products updated: {updated}; "
-            f"items awaiting SKU/stock or owner review: {staged + skipped}."
+            f"Created inactive product stubs: {created}; matching existing products preserved: {preserved}; "
+            f"ambiguous or conflicting entries skipped: {skipped}."
         )

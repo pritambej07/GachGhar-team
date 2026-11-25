@@ -3,7 +3,6 @@ from io import StringIO
 
 from django.core.management import call_command, CommandError
 from django.test import TestCase
-from django.urls import reverse
 
 from .models import Category, Product, ProductVariant, StockMovement
 
@@ -11,37 +10,22 @@ from .models import Category, Product, ProductVariant, StockMovement
 class CatalogueImportCommandTests(TestCase):
     def setUp(self):
         indoor = Category.objects.create(name="Indoor & Foliage Plants", slug="indoor-foliage-plants")
-        pots = Category.objects.create(name="Pots & Planters", slug="pots-planters")
+        seeds = Category.objects.create(name="Seeds", slug="seeds")
         soil = Category.objects.create(name="Soil & Fertilizers", slug="soil-fertilizers")
-        self.money = self._product(
-            indoor, "Golden Money Plant", "money-old", "79.00", "GG-OLD-MONEY", "Standard nursery plant"
-        )
+        pots = Category.objects.create(name="Pots & Planters", slug="pots-planters")
+        tools = Category.objects.create(name="Gardening Tools", slug="gardening-tools")
+
+        self.money = self._product(indoor, "Golden Money Plant", "money-old", "79.00", "GG-OLD-MONEY", "Small")
         self.snake = self._product(
-            indoor, "Snake Plant / Sansevieria", "snake-old", "149.00", "GG-OLD-SNAKE", "Standard nursery plant"
+            indoor, "Snake Plant / Sansevieria", "snake-old", "149.00", "GG-OLD-SNAKE", "Medium"
         )
-        self.aloe = self._product(
-            indoor, "Aloe Vera Live Plant", "aloe-old", "79.00", "GG-OLD-ALOE", "Standard nursery plant"
-        )
+        self.aloe = self._product(indoor, "Aloe Vera Live Plant", "aloe-old", "79.00", "GG-OLD-ALOE", "Small")
+        self.tomato = self._product(seeds, "Tomato Seeds", "tomato-old", "35.00", "GG-OLD-TOMATO", "30 seeds")
         self.pot = self._product(
             pots, "6-Inch Plastic Nursery Pot", "pot-old", "39.00", "GG-OLD-POT", "6-inch pot", compare_at="99.00"
         )
         self.vermicompost = self._product(
-            soil, "Organic Vermicompost - 1 kg", "vermicompost-old", "59.00", "GG-OLD-VERMI", "1 kg pack"
-        )
-        self.cocopeat = self._product(
-            soil, "Cocopeat Block - 650 g", "cocopeat-old", "39.00", "GG-OLD-COCO", "650 g block"
-        )
-        self.red_hibiscus = self._product(
-            Category.objects.create(name="Flowering Plants", slug="flowering-plants"),
-            "Red Hibiscus / Gudhal Live Plant", "hibiscus-red", "99.00", "GG-OLD-HIB-RED", "Standard nursery plant",
-        )
-        self.pink_hibiscus = self._product(
-            Category.objects.get(slug="flowering-plants"),
-            "Double Pink Hibiscus Live Plant", "hibiscus-pink", "129.00", "GG-OLD-HIB-PINK", "Standard nursery plant",
-        )
-        self.bougainvillea = self._product(
-            Category.objects.get(slug="flowering-plants"),
-            "Pink Bougainvillea Live Plant", "bougainvillea-pink", "129.00", "GG-OLD-BOUGAIN", "Standard nursery plant",
+            soil, "Organic Vermicompost - 1 kg", "vermicompost-old", "59.00", "GG-OLD-VERMI", "1 kg"
         )
         StockMovement.objects.create(
             variant=self.money.variants.get(), change=7, reason=StockMovement.Reason.RESTOCK
@@ -49,6 +33,7 @@ class CatalogueImportCommandTests(TestCase):
         StockMovement.objects.create(
             variant=self.pot.variants.get(), change=98, reason=StockMovement.Reason.RESTOCK
         )
+        self.assertEqual(Category.objects.count(), 5)
 
     def _product(self, category, name, slug, price, sku, variant_name, compare_at=None):
         product = Product.objects.create(name=name, slug=slug, category=category, description="Existing description")
@@ -61,80 +46,94 @@ class CatalogueImportCommandTests(TestCase):
         )
         return product
 
-    def test_default_command_is_a_read_only_dry_run(self):
+    def test_default_command_previews_only_the_15_requested_products(self):
         product_count = Product.objects.count()
         category_count = Category.objects.count()
-        money_price = self.money.variants.get().price
         output = StringIO()
 
         call_command("import_catalogue", stdout=output)
 
+        self.assertIn("Requested products: 15", output.getvalue())
+        self.assertIn("matched=5", output.getvalue())
+        self.assertIn("variant_pending=1", output.getvalue())
+        self.assertIn("create=9", output.getvalue())
         self.assertIn("DRY RUN ONLY", output.getvalue())
-        self.assertIn("Requested products: 26", output.getvalue())
-        self.assertIn("matched=4", output.getvalue())
-        self.assertIn("variant_pending=2", output.getvalue())
-        self.assertIn("ambiguous=2", output.getvalue())
         self.assertEqual(Product.objects.count(), product_count)
         self.assertEqual(Category.objects.count(), category_count)
-        self.assertEqual(self.money.variants.get().price, money_price)
 
-    def test_apply_requires_an_explicit_verified_backup_acknowledgement(self):
-        product_count = Product.objects.count()
-        category_count = Category.objects.count()
-
+    def test_apply_requires_backup_acknowledgement(self):
         with self.assertRaises(CommandError):
             call_command("import_catalogue", apply=True, stdout=StringIO())
+        self.assertEqual(Product.objects.count(), 6)
+        self.assertEqual(Category.objects.count(), 5)
 
-        self.assertEqual(Product.objects.count(), product_count)
-        self.assertEqual(Category.objects.count(), category_count)
-
-    def test_import_is_idempotent_and_preserves_inventory_and_existing_comparison_price(self):
+    def test_apply_creates_only_inactive_stubs_and_preserves_all_existing_records(self):
         output = StringIO()
         call_command("import_catalogue", apply=True, backup_verified=True, stdout=output)
-        first_product_count = Product.objects.count()
-        first_category_count = Category.objects.count()
-        call_command("import_catalogue", apply=True, backup_verified=True, stdout=StringIO())
 
-        self.money.refresh_from_db()
-        self.pot.refresh_from_db()
-        self.vermicompost.refresh_from_db()
-        self.cocopeat.refresh_from_db()
-        self.red_hibiscus.refresh_from_db()
-        self.pink_hibiscus.refresh_from_db()
-        self.bougainvillea.refresh_from_db()
-        self.assertEqual(Product.objects.count(), first_product_count)
-        self.assertEqual(Category.objects.count(), first_category_count)
-        self.assertEqual(self.money.name, "Money Plant (Golden Pothos)")
-        self.assertEqual(self.money.variants.get().price, Decimal("149.00"))
-        self.assertEqual(self.money.variants.get().stock, 7)
-        self.assertEqual(self.money.variants.get().sku, "GG-OLD-MONEY")
-        self.assertEqual(self.pot.variants.get().price, Decimal("49.00"))
-        self.assertEqual(self.pot.variants.get().stock, 98)
-        self.assertEqual(self.pot.variants.get().compare_at_price, Decimal("99.00"))
-        self.assertEqual(self.vermicompost.variants.get().price, Decimal("59.00"))
-        self.assertEqual(self.cocopeat.variants.get().price, Decimal("39.00"))
-        self.assertTrue(Product.objects.filter(name="Peace Lily", is_active=False, variants__isnull=True).exists())
-        self.assertTrue(Product.objects.filter(name="Neem Cake Powder", is_active=False, variants__isnull=True).exists())
-        self.assertEqual(self.red_hibiscus.name, "Red Hibiscus / Gudhal Live Plant")
-        self.assertEqual(self.pink_hibiscus.name, "Double Pink Hibiscus Live Plant")
-        self.assertEqual(self.bougainvillea.name, "Pink Bougainvillea Live Plant")
-        detail = self.client.get(reverse("store:product", args=[self.money.slug]))
-        self.assertEqual(detail.status_code, 200)
-        self.assertContains(detail, "Money Plant (Golden Pothos)")
-        self.assertContains(detail, "Indirect sunlight")
-        self.assertContains(detail, "₹149")
-        category = self.client.get(reverse("store:category", args=["live-plants"]))
-        self.assertEqual(category.status_code, 200)
-        self.assertContains(category, "Money Plant (Golden Pothos)")
-        for slug in (
-            "live-plants",
-            "seeds",
-            "soil-fertilizers",
-            "pots-planters",
-            "gardening-tools",
-            "plant-accessories",
+        self.assertEqual(Category.objects.count(), 5)
+        self.assertEqual(Product.objects.count(), 15)
+        self.assertEqual(Product.objects.filter(is_active=False, variants__isnull=False).count(), 9)
+        self.assertIn("matching existing products preserved: 5", output.getvalue())
+
+        for product, original_name, original_category, original_price, original_sku, original_stock in (
+            (self.money, "Golden Money Plant", "indoor-foliage-plants", Decimal("79.00"), "GG-OLD-MONEY", 7),
+            (self.snake, "Snake Plant / Sansevieria", "indoor-foliage-plants", Decimal("149.00"), "GG-OLD-SNAKE", 0),
+            (self.aloe, "Aloe Vera Live Plant", "indoor-foliage-plants", Decimal("79.00"), "GG-OLD-ALOE", 0),
+            (self.tomato, "Tomato Seeds", "seeds", Decimal("35.00"), "GG-OLD-TOMATO", 0),
+            (self.pot, "6-Inch Plastic Nursery Pot", "pots-planters", Decimal("39.00"), "GG-OLD-POT", 98),
+            (self.vermicompost, "Organic Vermicompost - 1 kg", "soil-fertilizers", Decimal("59.00"), "GG-OLD-VERMI", 0),
         ):
-            self.assertEqual(self.client.get(reverse("store:category", args=[slug])).status_code, 200)
-        search = self.client.get(reverse("store:search"), {"q": "Money Plant"})
-        self.assertContains(search, "Money Plant (Golden Pothos)")
-        self.assertNotContains(search, "Peace Lily")
+            product.refresh_from_db()
+            variant = product.variants.get()
+            self.assertEqual(product.name, original_name)
+            self.assertEqual(product.category.slug, original_category)
+            self.assertEqual(variant.price, original_price)
+            self.assertEqual(variant.sku, original_sku)
+            self.assertEqual(variant.stock, original_stock)
+
+        expected_prices = {
+            "Coriander Seeds": Decimal("39.00"),
+            "Sunflower Seeds": Decimal("59.00"),
+            "Neem Cake Powder": Decimal("99.00"),
+            "Cocopeat Block": Decimal("129.00"),
+            "Terracotta Clay Pot": Decimal("99.00"),
+            "Ceramic Decorative Pot": Decimal("249.00"),
+            "Gardening Gloves": Decimal("129.00"),
+            "Garden Hand Trowel": Decimal("149.00"),
+            "Pruning Shears": Decimal("249.00"),
+        }
+        expected_categories = {
+            "Coriander Seeds": "seeds",
+            "Sunflower Seeds": "seeds",
+            "Neem Cake Powder": "soil-fertilizers",
+            "Cocopeat Block": "soil-fertilizers",
+            "Terracotta Clay Pot": "pots-planters",
+            "Ceramic Decorative Pot": "pots-planters",
+            "Gardening Gloves": "gardening-tools",
+            "Garden Hand Trowel": "gardening-tools",
+            "Pruning Shears": "gardening-tools",
+        }
+        for name, expected_price in expected_prices.items():
+            stub = Product.objects.get(name=name)
+            self.assertFalse(stub.is_active)
+            variant = stub.variants.get()
+            self.assertEqual(variant.price, expected_price)
+            self.assertEqual(variant.stock, 0)
+            self.assertTrue(variant.sku.startswith("GG-PLAN-"))
+            self.assertEqual(stub.category.slug, expected_categories[name])
+            self.assertFalse(stub.images.exists())
+
+        count_after_first_apply = Product.objects.count()
+        call_command("import_catalogue", apply=True, backup_verified=True, stdout=StringIO())
+        self.assertEqual(Product.objects.count(), count_after_first_apply)
+        self.assertEqual(Category.objects.count(), 5)
+
+    def test_missing_existing_category_blocks_apply_without_creating_or_writing(self):
+        Category.objects.get(slug="gardening-tools").delete()
+
+        with self.assertRaisesMessage(CommandError, "Required existing categories are missing or ambiguous"):
+            call_command("import_catalogue", apply=True, backup_verified=True, stdout=StringIO())
+
+        self.assertEqual(Product.objects.count(), 6)
+        self.assertEqual(Category.objects.count(), 4)
