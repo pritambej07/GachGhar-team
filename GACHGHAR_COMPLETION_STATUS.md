@@ -67,23 +67,24 @@
 ---
 
 ## Next Actions (Priority Order)
-1. **APPLY MIGRATIONS TO PRODUCTION DATABASE** (CRITICAL - Vercel build cannot access Neon DB; Vercel CLI cannot pull production secrets)
-   - **User Action Required**: Get `DATABASE_URL` from Vercel Dashboard → Project → Settings → Environment Variables → Production
-   - **Then run locally**:
-     ```bash
-     cd D:\GachGhar_website_project\GachGhar
-     $env:DATABASE_URL="postgresql://<user>:<pass>@<host>/<db>?sslmode=require"
-     python manage.py migrate --noinput
-     ```
-   - **OR provide DATABASE_URL to agent** for secure execution
-2. **Verify live website after migrations applied**
-   - Need to verify: Guides page shows 14 published guides (not "Guides are coming soon")
-   - Need to verify: Blog page shows 3 published posts (not "No published blog posts yet")
-   - Need to verify: Checkout page shows both COD and Razorpay options (add item to cart first)
+1. ✅ **APPLY MIGRATIONS TO PRODUCTION DATABASE** - COMPLETED
+   - Migrations 0009, 0010, 0011 applied successfully via local Django with production DATABASE_URL
+   - 14 guides, 3 blog posts, COD enabled in production database
+2. ✅ **CODE FIX DEPLOYED** - COMPLETED
+   - Fixed guides/blog views to use try/except instead of cached `connection.introspection.table_names()`
+   - Commit caef0dc pushed, new deployment built (aod7n2f5a)
+3. 🔄 **VERCEL PLATFORM CONFIGURATION NEEDED** (User Action Required)
+   - **Disable Vercel Authentication**: Dashboard → Project → Settings → General → Vercel Authentication → **Disable**
+     - Currently enabled, causing deployment URL to show login page
+   - **Purge Edge Cache**: Dashboard → Project → Settings → Edge Network → **Purge Cache**
+     - Main domain `gach-ghar-team-jade.vercel.app` serves stale content (old deployment)
+     - Alias correctly points to new deployment but edge cache hasn't invalidated
+4. **Verify live website after Vercel config fixed**
+   - Need to verify: Guides page shows 14 published guides
+   - Need to verify: Blog page shows 3 published posts
+   - Need to verify: Checkout page shows both COD and Razorpay options
    - Need to verify: Product images display correctly (test admin upload)
    - Need to verify: Cart and checkout flow works (COD and Razorpay TEST MODE)
-3. **Test locally** all functionality - DONE (all critical tests pass)
-4. **Deploy to Vercel** - DONE (pushed commit c122faa)
 
 ## Local Data Summary (Ready for Production)
 - **Guides**: 14 published (all is_published=True) - loaded by migration 0009
@@ -113,17 +114,23 @@
 
 **NOTE**: These migrations are in the codebase and tracked in git, but Vercel build may not have database access. They MUST be applied manually to the production Neon database.
 
-## Live Verification (Current - Production Migrations Pending)
-- ❌ `/guides/` - Returns 200 but shows "Guides are coming soon" (migration 0009 not applied to production DB)
-- ❌ `/blog/` - Returns 200 but shows "No published blog posts yet" (migration 0009 not applied to production DB)
-- ❌ `/checkout/` - COD not visible (migration 0011 not applied to production DB, or cart empty)
+## Live Verification (Current - Vercel Config Pending)
+- ❌ `/guides/` - Returns 200 but shows "Guides are coming soon" (edge cache serves stale content)
+- ❌ `/blog/` - Returns 200 but shows "No published blog posts yet" (edge cache serves stale content)
+- ❌ `/checkout/` - COD not visible (edge cache serves stale content, cart empty)
 - ✅ `/` - Home page works (200)
 - ✅ `/products/` - Products page works (200) - 6 products visible
 - ✅ `/product/snake-plant/` - Product detail works (200)
 - ✅ `/admin/` - Admin login page accessible (200)
 - ⚠️ `/debug/migrations/` - 404 (requires superuser in production)
 
-**Vercel CLI Status**: Project linked (`gach-ghar/gach-ghar-team`), 11 production secrets blocked from pull including `DATABASE_URL`
+**Production Database**: ✅ Migrations 0009, 0010, 0011 applied - 14 guides, 3 blog posts, COD enabled
+**Code Deployment**: ✅ Commit caef0dc deployed (deployment aod7n2f5a)
+**Alias**: ✅ `gach-ghar-team-jade.vercel.app` → `gach-ghar-team-aod7n2f5a-gach-ghar.vercel.app`
+
+**Vercel Issues Blocking Live Site**:
+1. **Vercel Authentication ENABLED** - Deployment URL shows login page (disable in Dashboard → Settings → General)
+2. **Edge Cache STALE** - Main domain serves old deployment content (purge in Dashboard → Settings → Edge Network)
 
 ## Local Verification Complete
 - ✅ Guides: 14 published guides exist and will be loaded by migration 0009
@@ -137,11 +144,14 @@
 ---
 
 ## Blockers / Questions
-1. **CRITICAL: Vercel CLI cannot pull production secrets** - `vercel env pull` returns `[SENSITIVE]` placeholders for 11 secrets including `DATABASE_URL`. This is a Vercel security feature. Production DATABASE_URL must be obtained from Vercel Dashboard manually.
-2. Need to confirm if Neon production database has the guide/blog data after manual migration
-3. Need to check if Cloudinary credentials are configured in Vercel (for admin image uploads)
-4. Need to verify Razorpay test mode credentials in Vercel (rzp_test_ keys)
-5. Need to verify Vercel build completes successfully (check Vercel deployment logs)
+1. **RESOLVED**: Production DATABASE_URL obtained and migrations 0009, 0010, 0011 applied successfully
+2. **RESOLVED**: Neon production database has 14 guides, 3 blog posts, COD enabled
+3. **RESOLVED**: Code fix for serverless table_names() cache deployed (commit caef0dc)
+4. **PENDING USER ACTION**: Disable Vercel Authentication in Dashboard (Settings → General)
+5. **PENDING USER ACTION**: Purge Edge Cache in Dashboard (Settings → Edge Network)
+6. Need to verify Cloudinary credentials work for admin image uploads
+7. Need to verify Razorpay test mode credentials (rzp_test_ keys)
+8. Need to verify complete checkout flow (COD + Razorpay TEST MODE)
 
 ---
 
