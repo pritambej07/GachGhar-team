@@ -1,0 +1,297 @@
+﻿<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Page not found | GachGhar</title>
+  <meta name="description" content="Plants, seeds and gardening essentials from GachGhar.">
+  <meta property="og:site_name" content="GachGhar">
+  <meta property="og:title" content="GachGhar">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://gach-ghar-team-jade.vercel.app/api/index.py">
+  <link rel="icon" href="/static/assets/images/branding/gachghar-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/gachghar-custom.css">
+  
+</head>
+<body class="">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <input type="hidden" id="csrf-token" value="vpPXPDnGVxMtoDVFalTPQVyr4Yz5iHa5FUkGKHJll4eu8VcnqzefHuLPXaQptXOm">
+  
+  
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z M9 8V6.5a3 3 0 0 1 6 0V8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.2 4.2 0 0 1 12 7.4 4.2 4.2 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4V7zM3 7l9 4 9-4M12 11v10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="site-header">
+  <div class="site-header__bar">
+    <div class="site-header__start">
+      <button type="button" class="icon-btn only-mobile" data-drawer-open="mobile-nav" aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu">
+        <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+      <a class="site-logo" href="/" aria-label="GachGhar home">
+        
+          <img src="/static/assets/images/branding/gachghar-logo-trimmed.jpg" alt="GachGhar" width="736" height="510">
+        
+      </a>
+    </div>
+
+    <nav class="site-nav only-desktop" aria-label="Main navigation">
+      <ul class="site-nav__list">
+        <li class="site-nav__item"><a class="site-nav__link" href="/">Home</a></li>
+        <li class="site-nav__item site-nav__item--shop">
+          <a class="site-nav__link" href="/products/">Shop</a>
+          <div class="mega mega--shop">
+            <div class="mega__inner">
+              <p class="mega__title"><a href="/products/">Shop all plants &amp; essentials</a></p>
+              <ul class="mega__list">
+                
+                  <li><a href="/category/indoor-plants/">Indoor Plants</a></li>
+                  
+                
+                  <li><a href="/category/seeds/">Seeds</a></li>
+                  
+                
+                  <li><a href="/category/fertilizers-soil/">Fertilizers &amp; Soil</a></li>
+                  
+                
+                  <li><a href="/category/pots-planters/">Pots &amp; Planters</a></li>
+                  
+                
+                  <li><a href="/category/gardening-tools/">Gardening Tools</a></li>
+                  
+                
+              </ul>
+              <a class="mega__all" href="/products/">View all products</a>
+            </div>
+          </div>
+        </li>
+        <li class="site-nav__item"><a class="site-nav__link" href="/about/">About</a></li>
+        <li class="site-nav__item"><a class="site-nav__link" href="/blog/">Blog</a></li>
+        <li class="site-nav__item"><a class="site-nav__link" href="/guides/">Plant Care</a></li>
+        <li class="site-nav__item"><a class="site-nav__link" href="/contact/">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__end">
+            <details class="header-action header-action--search" data-gachghar-search>
+        <summary class="icon-btn" aria-label="Open product search" title="Search">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+        </summary>
+        <div class="header-popover header-search-popover">
+          <form role="search" action="/search/" method="get" data-product-search-form>
+            <label class="visually-hidden" for="gachghar-product-search">Search GachGhar products</label>
+            <input id="gachghar-product-search"
+                   type="search"
+                   name="q"
+                   placeholder="Search plants, pots, seeds and gardening products..."
+                   value=""
+                   minlength="2"
+                   required
+                   autocomplete="off">
+            <button type="submit" class="btn btn--primary btn--sm">Search</button>
+            <button type="button" class="header-search-close" data-search-close aria-label="Close search" title="Close search">
+              <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+            </button>
+          </form>
+        </div>
+      </details>
+
+
+      
+        <a class="icon-btn only-desktop" href="/account/login/?next=/wishlist/" aria-label="Wishlist" title="Log in to view your wishlist"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></a>
+      
+
+      <button type="button" class="icon-btn cart-btn" data-cart-open aria-controls="cart-drawer" aria-expanded="false" aria-label="Open cart, 0 items" title="Cart">
+        <svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg>
+        <span class="badge" data-cart-count>0</span>
+      </button>
+
+      <details class="header-action header-account only-desktop">
+        <summary class="icon-btn" aria-label="Account menu" title="My account">
+          <svg class="icon" aria-hidden="true"><use href="#i-user"/></svg>
+        </summary>
+        <div class="header-popover header-account-popover">
+          
+            <p class="header-account__signed">Welcome to GachGhar</p>
+            <a href="/account/login/">Login</a>
+            <a href="/account/register/">Register</a>
+          
+        </div>
+      </details>
+    </div>
+  </div>
+
+</header>
+
+<div class="drawer drawer--left" id="mobile-nav" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <div class="drawer__head">
+    <span class="drawer__title">Menu</span>
+    <button type="button" class="icon-btn" data-drawer-close aria-label="Close menu"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+  </div>
+  <nav class="drawer__body" aria-label="Mobile navigation">
+    <ul class="mobile-nav">
+      <li><a href="/">Home</a></li>
+      <li><a href="/products/">Shop All</a></li>
+      <li><a href="/about/">About</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li><a href="/guides/">Plant Care</a></li>
+      <li><a href="/contact/">Contact</a></li>
+      <li>
+        <details>
+          <summary>Shop by category</summary>
+          <ul>
+            
+              <li><a href="/category/indoor-plants/">Indoor Plants</a></li>
+              
+            
+              <li><a href="/category/seeds/">Seeds</a></li>
+              
+            
+              <li><a href="/category/fertilizers-soil/">Fertilizers &amp; Soil</a></li>
+              
+            
+              <li><a href="/category/pots-planters/">Pots &amp; Planters</a></li>
+              
+            
+              <li><a href="/category/gardening-tools/">Gardening Tools</a></li>
+              
+            
+          </ul>
+        </details>
+      </li>
+      <li><a href="/assistant/">AI Stylist</a></li>
+      
+        <li><a href="/account/login/">Login</a></li>
+        <li><a href="/account/register/">Register</a></li>
+      
+    </ul>
+  </nav>
+</div>
+
+  <main id="main" class="site-main">
+    
+
+    
+<div class="container narrow center">
+  <h1 class="page-title">Page not found</h1>
+  <p>The page you are looking for does not exist or has moved.</p>
+  <a class="btn btn--primary" href="/">Back to home</a>
+</div>
+
+  </main>
+  
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <img class="footer-logo" src="/static/assets/images/branding/gachghar-logo-trimmed.jpg" alt="GachGhar" width="736" height="510" loading="lazy">
+      
+    </div>
+    <nav aria-label="Shop">
+      <h2 class="footer-title">Shop</h2>
+      <ul>
+        <li><a href="/category/indoor-plants/">Indoor Plants</a></li><li><a href="/category/seeds/">Seeds</a></li><li><a href="/category/fertilizers-soil/">Fertilizers &amp; Soil</a></li><li><a href="/category/pots-planters/">Pots &amp; Planters</a></li><li><a href="/category/gardening-tools/">Gardening Tools</a></li>
+      </ul>
+    </nav>
+    <nav aria-label="Help and information">
+      <h2 class="footer-title">Help</h2>
+      <ul>
+        <li><a href="/guides/">Plant care guides</a></li>
+        <li><a href="/assistant/">Shopping assistant</a></li>
+        <li><a href="/about/">About GachGhar</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        
+      </ul>
+    </nav>
+    <div>
+      <h2 class="footer-title">Contact</h2>
+      <p><a href="/contact/">Contact GachGhar</a></p>
+      
+      
+      
+    </div>
+  </div>
+  <p class="copyright">&copy; GachGhar. All rights reserved.</p>
+</footer>
+
+  <aside class="drawer drawer--right" id="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-drawer-title" hidden>
+  <div class="drawer__head">
+    <h2 class="drawer__title" id="cart-drawer-title">Your cart</h2>
+    <button type="button" class="icon-btn" data-drawer-close aria-label="Close cart"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+  </div>
+  <div class="drawer__body" data-cart-body data-api="/cart/api/" data-update-url="/cart/update/0/" aria-live="polite"><p class="muted">Loading your cartΓÇª</p></div>
+  <div class="drawer__foot" data-cart-foot hidden>
+    <div class="totals-line"><span>Subtotal</span><strong data-cart-subtotal></strong></div>
+    <a class="btn btn--primary btn--block" href="/checkout/">Checkout</a>
+    <a class="btn btn--ghost btn--block" href="/cart/">View full cart</a>
+  </div>
+</aside>
+
+  
+
+<div class="gardener" data-gardener
+     data-api="/assistant/api/" data-confirm="/assistant/confirm/"
+     data-history="/assistant/history/" data-clear="/assistant/clear/"
+     data-cart-api="/cart/api/" data-cart-add="/cart/add/">
+  
+  <button type="button" class="gardener__launcher" data-gardener-open aria-controls="gardener-panel"
+          aria-expanded="false" aria-label="Open AI Stylist chat">
+    <span class="gardener__sparkle" aria-hidden="true">Γ£ª</span>
+    <span class="gardener__launcher-text">AI Stylist</span>
+  </button>
+  
+  <section class="gardener__panel" id="gardener-panel" role="dialog"
+           aria-label="Personal AI Stylist" aria-modal="false" hidden>
+    <header class="gardener__header">
+      <span class="gardener__avatar" aria-hidden="true">Γ£ª</span>
+      <div class="gardener__title">
+        <strong>Personal AI Stylist</strong>
+        <span class="gardener__status" data-gardener-status>Your plant &amp; shopping assistant</span>
+      </div>
+      <button type="button" class="gardener__icon-btn" data-gardener-clear aria-label="Start a new chat" title="New chat">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 5V2L7 6.5 12 11V8a5 5 0 1 1-5 5H5a7 7 0 1 0 7-8Z"/></svg>
+      </button>
+      
+      <button type="button" class="gardener__icon-btn" data-gardener-close aria-label="Close chat">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="m18.3 5.7-1-1L12 10 6.7 4.7l-1 1L11 11l-5.3 5.3 1 1L12 12l5.3 5.3 1-1L13 11Z"/></svg>
+      </button>
+      
+    </header>
+    <div class="gardener__log" data-gardener-log role="log" aria-live="polite" aria-relevant="additions" tabindex="0">
+      <div class="gardener__msg gardener__msg--bot" data-gardener-welcome>
+        <p>Hello! IΓÇÖm your Personal AI Stylist. Tell me what kind of plants youΓÇÖre looking for, ask for care tips, compare products, or get help with your cart and orders. You can chat in Bengali or English.</p>
+      </div>
+      <div class="gardener__chips" data-gardener-chips>
+        <button type="button" class="gardener__chip">Indoor plants for low light</button>
+        <button type="button" class="gardener__chip">Plants under Γé╣500</button>
+        <button type="button" class="gardener__chip">Show my cart</button>
+        <button type="button" class="gardener__chip">Where is my order?</button>
+        <button type="button" class="gardener__chip">αªåαª«αª╛αª░ αªòαª╛αª░αºìαªƒ αªªαºçαªûαª╛αªô</button>
+      </div>
+    </div>
+    <form class="gardener__form" data-gardener-form autocomplete="off">
+      <label class="visually-hidden" for="gardener-input">Message your AI Stylist</label>
+      <input id="gardener-input" type="text" name="message" maxlength="500"
+             placeholder="Ask your stylist..." required>
+      <button type="submit" class="gardener__send" aria-label="Send message"><span>Send</span></button>
+    </form>
+    <p class="gardener__note">AI can make mistakes. Prices, stock and orders shown in cards come from our store. Checkout and payment always happen on the secure checkout page.</p>
+  </section>
+</div>
+
+  <div class="overlay" data-overlay hidden></div>
+  <script src="/static/js/main.js" defer></script>
+  <script src="/static/js/search.js" defer></script>
+  <script src="/static/js/assistant.js" defer></script>
+  
+</body>
+</html>

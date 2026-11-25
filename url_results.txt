@@ -1,0 +1,6 @@
+https://gach-ghar-team-jade.vercel.app/ -> 200
+https://gach-ghar-team-jade.vercel.app/products/ -> 200
+https://gach-ghar-team-jade.vercel.app/about/ -> 200
+https://gach-ghar-team-jade.vercel.app/blog/ -> 200
+https://gach-ghar-team-jade.vercel.app/guides/ -> 200
+https://gach-ghar-team-jade.vercel.app/contact/ -> 200
